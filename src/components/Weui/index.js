@@ -12,10 +12,10 @@ import Toast from './toast';
 // import Article from './components/article/index';
 // import Icon from './components/icon/index';
 // import {Grids, Grid, GridIcon, GridLabel} from './components/grid/index';
-// import {Panel, PanelHeader, PanelBody, PanelFooter} from './components/panel/index';
+import {Panel, PanelHeader, PanelBody, PanelFooter} from './panel';
 // import {MediaBox, MediaBoxHeader, MediaBoxBody, MediaBoxTitle, MediaBoxDescription, MediaBoxInfo, MediaBoxInfoMeta} from './components/mediabox/index';
 // import {Tab, TabBody, TabBodyItem, NavBar, NavBarItem, TabBar, TabBarItem, TabBarIcon, TabBarLabel} from './components/tab/index';
-// import SearchBar from './components/searchbar/index';
+import SearchBar from './searchbar';
 // import Layout from './Layout';
 
 export default {
@@ -72,5 +72,5 @@ export default {
 //     TabBarIcon,
 //     TabBarItem,
 //     TabBarLabel,
-//     SearchBar
+  SearchBar
 };

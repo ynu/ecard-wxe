@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 function Container({ children }) {
   return (
-    <div className="container">
+    <div className="container" style={{ overflowY: 'auto' }}>
       {children}
     </div>
   );

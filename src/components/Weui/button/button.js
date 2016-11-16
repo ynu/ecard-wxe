@@ -30,9 +30,9 @@ export default class Button extends React.Component {
            'weui-btn_default': type === 'default' && !plain,
            'weui-btn_warn': type === 'warn',
 
-           'weui-btn_plain_primary': type === 'primary' && plain,
+           'weui-btn_plain-primary': type === 'primary' && plain,
 
-           'weui-btn_plain_default': type === 'default' && plain,
+           'weui-btn_plain-default': type === 'default' && plain,
 
            'weui-btn_mini': size === 'small',
 

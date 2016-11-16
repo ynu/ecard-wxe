@@ -7,7 +7,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import Icon from '../icon';
+// import Icon from '../icon';
 
 class SearchBar extends React.Component {
     static propTypes = {
@@ -53,19 +53,19 @@ class SearchBar extends React.Component {
     render() {
         const {children, placeholder, className, ...others} = this.props;
         const clz = classNames({
-            'weui_search_bar': true,
-            'weui_search_focusing': this.state.focus
+            'weui-search-bar': true,
+            'weui-search_focusing': this.state.focus
         }, className);
 
         return (
             <div className={clz}>
-                <form className='weui_search_outer'>
-                    <div className='weui_search_inner'>
-                        <Icon value='search'/>
+                <form className='weui-search-bar__form'>
+                    <div className='weui-search-bar__box'>
+                        <i className="weui-icon-search"></i>
                         <input
                             ref='searchInput'
                             type='search'
-                            className='weui_search_input'
+                            className='weui-search-bar__input'
                             placeholder={placeholder}
                             onFocus={e=>this.setState({focus:true})}
                             onBlur={e=>this.setState({focus:false})}
@@ -80,7 +80,7 @@ class SearchBar extends React.Component {
                         />
                     </div>
                     <label
-                        className='weui_search_text'
+                        className='weui-search-bar__label'
                         onClick={e=>ReactDOM.findDOMNode(this.refs.searchInput).focus()}
                         style={{display: this.state.text ? 'none': null}}
                     >
@@ -88,7 +88,7 @@ class SearchBar extends React.Component {
                         <span>{placeholder}</span>
                     </label>
                 </form>
-                <a className='weui_search_cancel' onClick={this.cancelHandle.bind(this)}>{this.props.lang.cancel}</a>
+                <a className='weui-search-bar__cancel-btn' onClick={this.cancelHandle.bind(this)}>{this.props.lang.cancel}</a>
             </div>
         );
     }
