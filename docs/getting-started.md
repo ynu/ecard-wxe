@@ -3,8 +3,8 @@
 ### Requirements
 
   * Mac OS X, Windows, or Linux
-  * [Node.js](https://nodejs.org/) v5.0 or newer
-  * `npm` v3.3 or newer (new to [npm](https://docs.npmjs.com/)?)
+  * [Node.js](https://nodejs.org/) v6.5 or newer
+  * `npm` v3.10 or newer (new to [npm](https://docs.npmjs.com/)?)
   * `node-gyp` prerequisites mentioned [here](https://github.com/nodejs/node-gyp)
   * Text editor or IDE pre-configured with React/JSX/Flow/ESlint ([learn more](./how-to-configure-text-editors.md))
 
@@ -24,7 +24,6 @@ Before you start, take a moment to see how the project structure looks like:
 │   ├── /data/                  # GraphQL server schema and data models
 │   ├── /public/                # Static files which are copied into the /build/public folder
 │   ├── /routes/                # Page/screen components along with the routing information
-│   ├── /views/                 # Express.js views (templates) for index and error pages
 │   ├── /client.js              # Client-side startup script
 │   ├── /config.js              # Global application settings
 │   └── /server.js              # Server-side startup script
@@ -130,7 +129,7 @@ $ npm run test:watch    # Launch unit test runner and start watching for changes
 ```
 
 By default, [Mocha](https://mochajs.org/) test runner is looking for test files
-matching the `src/**/*.test.js` pattern. Take a look at `src/components/App/App.test.js`
+matching the `src/**/*.test.js` pattern. Take a look at `src/components/Layout/Layout.test.js`
 as an example.
 
 To deploy the app, run:

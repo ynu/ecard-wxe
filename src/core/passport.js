@@ -28,6 +28,7 @@ passport.use(new FacebookStrategy({
   profileFields: ['name', 'email', 'link', 'locale', 'timezone'],
   passReqToCallback: true,
 }, (req, accessToken, refreshToken, profile, done) => {
+  /* eslint-disable no-underscore-dangle */
   const loginName = 'facebook';
   const claimType = 'urn:facebook:access_token';
   const fooBar = async () => {
@@ -91,7 +92,7 @@ passport.use(new FacebookStrategy({
         } else {
           user = await User.create({
             email: profile._json.email,
-            emailVerified: true,
+            emailConfirmed: true,
             logins: [
               { name: loginName, key: profile.id },
             ],
@@ -99,7 +100,7 @@ passport.use(new FacebookStrategy({
               { type: claimType, value: accessToken },
             ],
             profile: {
-              displaynName: profile.displayName,
+              displayName: profile.displayName,
               gender: profile._json.gender,
               picture: `https://graph.facebook.com/${profile.id}/picture?type=large`,
             },

@@ -10,9 +10,9 @@
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Layout from '../../components/Layout';
-import s from './Contact.css';
+import s from './Admin.css';
 
-function Contact({ title }) {
+function Admin({ title }) {
   return (
     <Layout>
       <div className={s.root}>
@@ -25,8 +25,8 @@ function Contact({ title }) {
   );
 }
 
-Contact.propTypes = {
+Admin.propTypes = {
   title: PropTypes.string.isRequired,
 };
 
-export default withStyles(s)(Contact);
+export default withStyles(s)(Admin);

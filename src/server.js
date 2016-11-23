@@ -15,15 +15,20 @@ import bodyParser from 'body-parser';
 import expressJwt from 'express-jwt';
 import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
+import React from 'react';
 import ReactDOM from 'react-dom/server';
-import { match } from 'universal-router';
+import UniversalRouter from 'universal-router';
 import PrettyError from 'pretty-error';
+import App from './components/App';
+import Html from './components/Html';
+import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
+import errorPageStyle from './routes/error/ErrorPage.css';
 import passport from './core/passport';
 import models from './data/models';
 import schema from './data/schema';
 import routes from './routes';
-import assets from './assets';
-import { port, auth, analytics } from './config';
+import assets from './assets'; // eslint-disable-line import/no-unresolved
+import { port, auth } from './config';
 
 const app = express();
 
@@ -48,9 +53,7 @@ app.use(bodyParser.json());
 app.use(expressJwt({
   secret: auth.jwt.secret,
   credentialsRequired: false,
-  /* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
   getToken: req => req.cookies.id_token,
-  /* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
 }));
 app.use(passport.initialize());
 
@@ -82,34 +85,38 @@ app.use('/graphql', expressGraphQL(req => ({
 // -----------------------------------------------------------------------------
 app.get('*', async (req, res, next) => {
   try {
-    let css = [];
-    let statusCode = 200;
-    const template = require('./views/index.jade');
-    const data = { title: '', description: '', css: '', body: '', entry: assets.main.js };
+    const css = new Set();
 
-    if (process.env.NODE_ENV === 'production') {
-      data.trackingId = analytics.google.trackingId;
-    }
+    // Global (context) variables that can be easily accessed from any React component
+    // https://facebook.github.io/react/docs/context.html
+    const context = {
+      // Enables critical path CSS rendering
+      // https://github.com/kriasoft/isomorphic-style-loader
+      insertCss: (...styles) => {
+        // eslint-disable-next-line no-underscore-dangle
+        styles.forEach(style => css.add(style._getCss()));
+      },
+    };
 
-    await match(routes, {
+    const route = await UniversalRouter.resolve(routes, {
       path: req.path,
       query: req.query,
-      context: {
-        insertCss: styles => css.push(styles._getCss()),
-        setTitle: value => (data.title = value),
-        setMeta: (key, value) => (data[key] = value),
-      },
-      render(component, status = 200) {
-        css = [];
-        statusCode = status;
-        data.body = ReactDOM.renderToString(component);
-        data.css = css.join('');
-        return true;
-      },
     });
 
-    res.status(statusCode);
-    res.send(template(data));
+    if (route.redirect) {
+      res.redirect(route.status || 302, route.redirect);
+      return;
+    }
+
+    const data = { ...route };
+    data.children = ReactDOM.renderToString(<App context={context}>{route.component}</App>);
+    data.style = [...css].join('');
+    data.script = assets.main.js;
+    data.chunk = assets[route.chunk] && assets[route.chunk].js;
+    const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
+
+    res.status(route.status || 200);
+    res.send(`<!doctype html>${html}`);
   } catch (err) {
     next(err);
   }
@@ -124,13 +131,17 @@ pe.skipPackage('express');
 
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   console.log(pe.render(err)); // eslint-disable-line no-console
-  const template = require('./views/error.jade');
-  const statusCode = err.status || 500;
-  res.status(statusCode);
-  res.send(template({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? '' : err.stack,
-  }));
+  const html = ReactDOM.renderToStaticMarkup(
+    <Html
+      title="Internal Server Error"
+      description={err.message}
+      style={errorPageStyle._getCss()} // eslint-disable-line no-underscore-dangle
+    >
+      {ReactDOM.renderToString(<ErrorPageWithoutStyle error={err} />)}
+    </Html>
+  );
+  res.status(err.status || 500);
+  res.send(`<!doctype html>${html}`);
 });
 
 //

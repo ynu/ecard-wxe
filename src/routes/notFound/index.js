@@ -7,8 +7,21 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import http from 'http';
+import React from 'react';
+import NotFound from './NotFound';
 
-export default async (url) => new Promise((resolve, reject) =>
-    http.get(url, res => resolve(res)).on('error', err => reject(err))
-);
+const title = 'Page Not Found';
+
+export default {
+
+  path: '*',
+
+  action() {
+    return {
+      title,
+      component: <NotFound title={title} />,
+      status: 404,
+    };
+  },
+
+};
