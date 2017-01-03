@@ -1,0 +1,19 @@
+{
+  "name": "ecard-wxe",
+  "version": "0.0.1",
+  "description": "一卡通应用系统（微信企业号）",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ynu/ecard-wxe.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ynu/ecard-wxe/issues"
+  },
+  "homepage": "https://github.com/ynu/ecard-wxe#readme"
+}
