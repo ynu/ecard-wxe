@@ -31,6 +31,8 @@ import assets from './assets'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import { port, auth } from './config';
+import wxeAuthCtrl from './api/controllers/wxe-auth';
+import shopCtrl from './api/controllers/shop';
 
 const app = express();
 
@@ -75,6 +77,9 @@ app.get('/login/facebook/return',
 //
 // Register API middleware
 // -----------------------------------------------------------------------------
+app.use('/api/wxe-auth', wxeAuthCtrl);
+app.use('/api/shop', shopCtrl);
+
 app.use('/graphql', expressGraphQL(req => ({
   schema,
   graphiql: true,
