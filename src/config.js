@@ -8,6 +8,9 @@
  */
 
 /* eslint-disable max-len */
+// import YktManager from 'ecard-api';
+import WxeApi from 'wxe-api';
+import YktManager from './api/models/ykt';
 
 export const port = process.env.PORT || 3000;
 export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
@@ -44,5 +47,23 @@ export const auth = {
     key: process.env.TWITTER_CONSUMER_KEY || 'Ie20AZvLJI2lQD5Dsgxgjauns',
     secret: process.env.TWITTER_CONSUMER_SECRET || 'KTZ6cxoKnEakQCeSpZlaUCJWGAlTEBJj0y2EMkUBujA7zWSvaQ',
   },
-
+  // 微信企业号
+  wxent: {
+    corpId: process.env.WXE_CORPID,
+    secret: process.env.WXE_SECRET,
+    agentId: process.env.WXE_AGENTID || 28,
+  },
 };
+
+export const tagPrefix = process.env.TAG_PREFIX || '一卡通';
+export const roles = {
+  posManager: process.env.POS_MANAGER || 'POS管理员',
+  shopManager: process.env.SHOP_MANAGER || '商户管理员',
+  ecManager: process.env.ECARD_CENTER_MANAGER || '中心管理员',
+};
+export const monitors = process.env.MONITOR_USERID || 'na57';
+
+export const dailyReportCron = process.env.DAILY_REPORT_CRON || '0 0 8 * * *';
+export const wxeapi = new WxeApi(auth.wxent);
+
+export const yktManager = new YktManager({ url: databaseUrl });
