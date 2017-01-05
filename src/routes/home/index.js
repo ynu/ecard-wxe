@@ -12,7 +12,7 @@ import Home from './Home';
 
 export default {
 
-  path: '/',
+  path: '/homedddd',
 
   async action() {
     const resp = await fetch('/graphql', {
