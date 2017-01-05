@@ -28,6 +28,8 @@ import models from './data/models';
 import schema from './data/schema';
 import routes from './routes';
 import assets from './assets'; // eslint-disable-line import/no-unresolved
+import configureStore from './store/configureStore';
+import { setRuntimeVariable } from './actions/runtime';
 import { port, auth } from './config';
 
 const app = express();
@@ -85,6 +87,17 @@ app.use('/graphql', expressGraphQL(req => ({
 // -----------------------------------------------------------------------------
 app.get('*', async (req, res, next) => {
   try {
+    const store = configureStore({
+      user: req.user || null,
+    }, {
+      cookie: req.headers.cookie,
+    });
+
+    store.dispatch(setRuntimeVariable({
+      name: 'initialNow',
+      value: Date.now(),
+    }));
+
     const css = new Set();
 
     // Global (context) variables that can be easily accessed from any React component
@@ -96,9 +109,13 @@ app.get('*', async (req, res, next) => {
         // eslint-disable-next-line no-underscore-dangle
         styles.forEach(style => css.add(style._getCss()));
       },
+      // Initialize a new Redux store
+      // http://redux.js.org/docs/basics/UsageWithReact.html
+      store,
     };
 
     const route = await UniversalRouter.resolve(routes, {
+      ...context,
       path: req.path,
       query: req.query,
     });
@@ -112,6 +129,7 @@ app.get('*', async (req, res, next) => {
     data.children = ReactDOM.renderToString(<App context={context}>{route.component}</App>);
     data.style = [...css].join('');
     data.script = assets.main.js;
+    data.state = context.store.getState();
     data.chunk = assets[route.chunk] && assets[route.chunk].js;
     const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
 
