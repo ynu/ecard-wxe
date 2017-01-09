@@ -15,15 +15,15 @@ const getTag = (role, id) => `${tagPrefix}_${role}_${id}`;
 const sendBill = async (bill, to, agentId) => {
   try {
     // 生成消息文本
-    let content = '一卡通日结单\n---\n';
-    content += `商户: ${bill.shopName}\n`;
-    content += `日期: ${bill.accDate}\n`;
-    content += `消费笔数: ${bill.transCnt}\n`;
-    content += `消费金额: ${bill.crAmt}\n`;
-    content += `充值金额: ${bill.drAmt}\n`;
+    const article = {
+      title: `${bill.shopName}日结单(${bill.accDate})`,
+      description: `消费金额：${bill.crAmt}元，共${bill.transCnt}笔。`,
+      url: `http://ecard-wxe.ynu.edu.cn/shop/${bill.shopId}/daily-bill/${bill.accDate}`,
+      picurl: 'http://www.ynu.edu.cn/images/content/2013-12/20131022162236810671.jpg',
+    };
 
     // 2.3. 推送微信通知
-    return wxeapi.sendText(to, agentId, content);
+    return wxeapi.sendNews(to, agentId, [article]);
   } catch (e) {
     console.log(e);
     return Promise.reject(e);
