@@ -8,14 +8,16 @@
  */
 
 /* eslint-disable max-len */
-// import YktManager from 'ecard-api';
+
+import { YktManager } from 'ecard-api';
 import WxeApi from 'wxe-api';
-import YktManager from './api/models/ykt';
 
 export const port = process.env.PORT || 3000;
 export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
 
 export const databaseUrl = process.env.DATABASE_URL || 'sqlite:database.sqlite';
+
+export const mysqlUrl = process.env.MYSQL_URL;
 
 export const analytics = {
 
@@ -66,4 +68,4 @@ export const monitors = process.env.MONITOR_USERID || 'na57';
 export const dailyReportCron = process.env.DAILY_REPORT_CRON || '0 0 8 * * *';
 export const wxeapi = new WxeApi(auth.wxent);
 
-export const yktManager = new YktManager({ url: databaseUrl });
+export const yktManager = new YktManager({ url: mysqlUrl });

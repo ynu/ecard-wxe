@@ -8,7 +8,7 @@ const router = new Router();
 router.get('/:shopId/daily-bill/:accDate',
   async (req, res) => {
     const { shopId, accDate } = req.params;
-    return res.send({
+    res.send({
       ret: SUCCESS,
       data: {
         shopId: 9999,
@@ -18,6 +18,18 @@ router.get('/:shopId/daily-bill/:accDate',
         crAmt: 3458,
         drAmt: 0,
       },
+    });
+  }
+);
+
+router.get('/:shopId/subShops',
+  async (req, res) => {
+    const { shopId } = req.params;
+    res.send({
+      ret: SUCCESS,
+      data: [{
+
+      }],
     });
   }
 );
