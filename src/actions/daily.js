@@ -10,8 +10,13 @@ export const getShopBill = (shopId, accDate) => async dispatch => {
     });
     const result = await res.json();
     if (result.ret === SUCCESS) {
-      dispatch(fetchDone(result.data));
-      return Promise.resolve(result.data);
+      const data = {
+        shopBill: result.data.shopBill || {},
+        subShopBills: result.data.subShopBills || [],
+        deviceBills: result.data.deviceBills || [],
+      };
+      dispatch(fetchDone(data));
+      return Promise.resolve(data);
     }
     dispatch(fetchFailed(result));
     return Promise.reject(result);

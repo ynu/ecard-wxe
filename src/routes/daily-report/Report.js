@@ -18,14 +18,14 @@ class Report extends React.Component {
     shopBill: PropTypes.object.isRequired,
     subShopBills: PropTypes.array.isRequired,
     deviceBills: PropTypes.array.isRequired,
-    loading: PropTypes.bool.isRequired,
+    toast: PropTypes.object.isRequired,
   };
   componentDidMount() {
     const { shopId, accDate, getShopBill } = this.props;
     getShopBill(shopId, accDate);
   }
   render() {
-    const { shopBill, subShopBills, deviceBills, loading } = this.props;
+    const { shopBill, subShopBills, deviceBills, toast } = this.props;
     return (
       <Container>
         <PageHeader title={shopBill.shopName} />
@@ -42,7 +42,7 @@ class Report extends React.Component {
           <Cells>
             { subShopBills.length
               ? subShopBills.map(bill => <SubShopBill bill={bill} />)
-              : <LoadMore showLine showDot />
+              : <LoadMore showLine>暂无数据</LoadMore>
             }
           </Cells>
           <CellsTitle>设备</CellsTitle>
@@ -50,19 +50,19 @@ class Report extends React.Component {
             {
               deviceBills.length
               ? deviceBills.map(bill => <DeviceBill bill={bill} />)
-              : <LoadMore showLine showDot />
+              : <LoadMore showLine>暂无数据</LoadMore>
             }
           </Cells>
         </div>
         <Footer />
-        <Toast loading show={loading} >加载中</Toast>
+        <Toast icon={toast.icon} show={toast.loading} >加载中</Toast>
       </Container>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  loading: state.wechat.toast.loading,
+  toast: state.wechat.toast,
   ...state.shop.dailyBill,
 });
 export default connect(mapStateToProps, {

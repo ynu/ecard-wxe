@@ -11,7 +11,7 @@ router.get('/:shopId/daily-bill/:accDate',
     try {
       const shopBill = await yktManager.getShopBill(shopId, accDate);
       const subShopBills = await yktManager.getShopBills(shopId, accDate);
-      const deviceBills = [];
+      const deviceBills = await yktManager.getDeviceBills(shopId, accDate);
       res.send({ ret: SUCCESS, data: {
         shopBill, subShopBills, deviceBills,
       } });

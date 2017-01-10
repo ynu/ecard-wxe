@@ -40,7 +40,10 @@ const toast = (state = {
 }, action) => {
   switch (action.type) {
     case FETCHING:
-      return { loading: true };
+      return {
+        loading: true,
+        icon: 'loading',
+      };
     case FETCH_DONE:
     case FETCH_FAILED:
       return { loading: false };
