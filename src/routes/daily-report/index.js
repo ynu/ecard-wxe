@@ -3,12 +3,12 @@ import Report from './Report';
 
 export default {
 
-  path: '/daily',
+  path: '/shop/:shopId/daily-bill/:accDate',
 
-  async action() {
+  async action({ params }) {
     return {
       title: '云南大学一卡通日结账单',
-      component: <Report shop={{ shopName: 'shopName' }} />,
+      component: <Report {...params} />,
     };
   },
 
