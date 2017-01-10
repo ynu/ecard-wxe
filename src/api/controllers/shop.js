@@ -1,36 +1,23 @@
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
 import { SUCCESS, SERVER_FAILED } from 'nagu-validates';
-import { host, auth } from '../../config';
+import { yktManager } from '../../config';
 
 const router = new Router();
 
 router.get('/:shopId/daily-bill/:accDate',
   async (req, res) => {
     const { shopId, accDate } = req.params;
-    res.send({
-      ret: SUCCESS,
-      data: {
-        shopId: 9999,
-        shopName: 'Test',
-        accDate: '20220202',
-        transCnt: 93,
-        crAmt: 3458,
-        drAmt: 0,
-      },
-    });
-  }
-);
-
-router.get('/:shopId/subShops',
-  async (req, res) => {
-    const { shopId } = req.params;
-    res.send({
-      ret: SUCCESS,
-      data: [{
-
-      }],
-    });
+    try {
+      const shopBill = await yktManager.getShopBill(shopId, accDate);
+      const subShopBills = await yktManager.getShopBills(shopId, accDate);
+      const deviceBills = [];
+      res.send({ ret: SUCCESS, data: {
+        shopBill, subShopBills, deviceBills,
+      } });
+    } catch (msg) {
+      res.send({ ret: SERVER_FAILED, msg });
+    }
   }
 );
 
