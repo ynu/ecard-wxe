@@ -25,7 +25,7 @@ class Report extends React.Component {
     getShopBill(shopId, accDate);
   }
   render() {
-    const { shopBill, subShopBills, deviceBills, toast } = this.props;
+    const { shopBill, subShopBills, deviceBills, toast, accDate } = this.props;
     return (
       <Container>
         <PageHeader title={shopBill.shopName} />
@@ -36,6 +36,9 @@ class Report extends React.Component {
             </PreviewHeader>
             <PreviewBody>
               <PreviewItem label="消费笔数" value={`${formatNumber(shopBill.transCnt)}笔`} />
+            </PreviewBody>
+            <PreviewBody>
+              <PreviewItem label="报表日期" value={accDate} />
             </PreviewBody>
           </Preview>
           <CellsTitle>子商户</CellsTitle>
