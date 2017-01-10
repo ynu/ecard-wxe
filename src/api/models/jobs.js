@@ -77,7 +77,7 @@ export const reportDailyShopBill = async () => {
 //
 // };
 
-const reportDaily = scheduleJob('0 * * * * *', () => {
+const reportDaily = scheduleJob(dailyReportCron, () => {
   // reportDailyDeviceBill();
   reportDailyShopBill();
   // reportDailyTotalBill();
