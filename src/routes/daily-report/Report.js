@@ -11,6 +11,15 @@ import SubShopBill from './SubShopBill';
 import DeviceBill from './DeviceBill';
 
 class Report extends React.Component {
+  static propTypes = {
+    shopId: PropTypes.string.isRequired,
+    accDate: PropTypes.string.isRequired,
+    getShopBill: PropTypes.func.isRequired,
+    shopBill: PropTypes.object.isRequired,
+    subShopBills: PropTypes.array.isRequired,
+    deviceBills: PropTypes.array.isRequired,
+    loading: PropTypes.bool.isRequired,
+  };
   componentDidMount() {
     const { shopId, accDate, getShopBill } = this.props;
     getShopBill(shopId, accDate);

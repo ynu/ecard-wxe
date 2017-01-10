@@ -14,4 +14,14 @@ const SubShopBill = ({ bill: { shopId, transCnt, crAmt, shopName, accDate } }) =
   </Cell>
   );
 
+SubShopBill.propTypes = {
+  bill: PropTypes.shape({
+    shopId: PropTypes.string.isRequired,
+    transCnt: PropTypes.number.isRequired,
+    crAmt: PropTypes.number.isRequired,
+    shopName: PropTypes.string.isRequired,
+    accDate: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 export default SubShopBill;
