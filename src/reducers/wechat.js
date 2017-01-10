@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { SELECT_ENTERPRISE_CONTACT, JSSDK_READY, JSSDK_CONFIG } from '../actions/wechat';
+import { FETCHING, FETCH_DONE, FETCH_FAILED } from '../actions/common';
 
 const selectedEnterpriseContact = (state = {
   departmentList: [],
@@ -34,7 +35,22 @@ const jssdk = (state = {
   }
 };
 
+const toast = (state = {
+  loading: false,
+}, action) => {
+  switch (action.type) {
+    case FETCHING:
+      return { loading: true };
+    case FETCH_DONE:
+    case FETCH_FAILED:
+      return { loading: false };
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   selectedEnterpriseContact,
   jssdk,
+  toast,
 });
