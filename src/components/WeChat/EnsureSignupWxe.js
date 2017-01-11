@@ -16,6 +16,7 @@ const EnsureSignupWxe = () => {
       else result = await res.json();
     } catch (e) {
       // 服务器错误
+      console.log('$$##222');
       return { ret: 999, msg: e };
     }
     if (result.ret === 0) return result.data;

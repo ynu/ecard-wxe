@@ -2,15 +2,8 @@
 
 import { scheduleJob } from 'node-schedule';
 import moment from 'moment';
-import { roles, tagPrefix, yktManager, wxeapi, dailyReportCron, auth, monitors } from '../../config';
-
-const getTag = (role, id) => `${tagPrefix}_${role}_${id}`;
-// const reportDailyDeviceBill = () => {
-//   // 1. 获取设备列表
-//   // 循环每个设备
-//   // 1. 取到当日数据
-//   // 2. 推送微信通知
-// };
+import { roles, yktManager, wxeapi, dailyReportCron,
+  auth, getTag } from '../../config';
 
 const sendBill = async (bill, to, agentId) => {
   try {

@@ -65,6 +65,9 @@ export const roles = {
 };
 export const monitors = process.env.MONITOR_USERID || 'na57';
 
+export const getTag = (role, id) => `${tagPrefix}_${role}_${id}`;
+export const getShopTag = shopName => getTag(roles.shopManager, shopName);
+
 export const dailyReportCron = process.env.DAILY_REPORT_CRON || '0 0 8 * * *';
 export const wxeapi = new WxeApi(auth.wxent);
 

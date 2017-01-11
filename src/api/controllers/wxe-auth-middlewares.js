@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import WxeApi from 'wxe-api';
-import { auth } from '../../config';
+import { auth, wxeapi } from '../../config';
 
 export const signin = ({
   wxeApiOpitons,
@@ -17,10 +17,11 @@ export const signin = ({
     // 返回原URL。当redirect_uri中包含中文时，可能会出错，应该进行encode操作。
     res.redirect(encodeURI(req.signedCookies.redirect_uri));
   },
-  fail = (err, req, res) => res.send(fail),
+  fail = (err, req, res) => res.send(err),
 }) => async (req, res, next) => {
   try {
-    const wxapi = new WxeApi(wxeApiOpitons);
+    // const wxapi = new WxeApi(wxeApiOpitons);
+    const wxapi = wxeapi;
     const callbackUrl = getCallBackUrl(req, res);
     // 1. 判断是否带有code参数，如果是的话，则说明已经从认证服务器返回
     if ('code' in req.query) {
@@ -34,7 +35,7 @@ export const signin = ({
       // 2.1 缓存 state 和redirect_uri
       const redirectUri = getRedirectUrl(req, res);
       if (!redirectUri) throw new Error({ ret: -1, msg: 'redirect_uri must be provided.' });
-
+      console.log('###2', redirectUri);
       const state = Math.random().toString();
 
       // 将state 和 redirect_uri 存入cookie中
@@ -43,7 +44,6 @@ export const signin = ({
 
       // 2.2 获取认证url
       const url = wxapi.getAuthorizeURL(callbackUrl, state);
-
       // 2.3 返回客户端，并在转到认证服务器。
       // 此处不能直接跳转到认证url，因为这样cookie就无法在客户端生效。
       res.send(`
@@ -55,7 +55,7 @@ export const signin = ({
       `);
     }
   } catch (msg) {
-    fail({ ret: -1, msg }, req, res, next);
+    fail({ ret: -1, msg: msg.message }, req, res, next);
   }
 };
 

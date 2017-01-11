@@ -6,6 +6,7 @@ import { formatMoney, formatNumber } from 'accounting';
 import Container from '../../components/Weui/Container';
 import PageHeader from '../../components/PageHeader';
 import Footer from '../../components/Footer';
+import EnsureSignupWxe from '../../components/WeChat/EnsureSignupWxe';
 import dailyActions from '../../actions/daily';
 import SubShopBill from './SubShopBill';
 import DeviceBill from './DeviceBill';
@@ -28,6 +29,7 @@ class Report extends React.Component {
     const { shopBill, subShopBills, deviceBills, toast, accDate } = this.props;
     return (
       <Container>
+        <EnsureSignupWxe />
         <PageHeader title={shopBill.shopName} />
         <div className="page__bd">
           <Preview>
