@@ -8,6 +8,8 @@
  */
 
 import 'babel-polyfill';
+import https from 'https';
+import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -25,7 +27,7 @@ import routes from './routes';
 import assets from './assets'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
-import { port, auth } from './config';
+import { port, auth, enableHttps, httpsPort, privateKeyFilePath, certificateFilePath } from './config';
 import wxeAuthCtrl from './api/controllers/wxe-auth';
 import shopCtrl from './api/controllers/shop';
 
@@ -152,3 +154,15 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 app.listen(port, () => {
   console.log(`The server is running at http://localhost:${port}/`);
 });
+
+// 启用https
+if (true) {
+  const privateKey = fs.readFileSync(privateKeyFilePath, 'utf8');
+  const certificate = fs.readFileSync(certificateFilePath, 'utf8');
+
+  const credentials = { key: privateKey, cert: certificate };
+  const httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(httpsPort, () => {
+    console.log(`The server is running at https://localhost:${httpsPort}/`);
+  });
+}

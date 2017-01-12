@@ -8,7 +8,7 @@
  */
 
 /* eslint-disable max-len */
-
+import path from 'path';
 import { YktManager } from 'ecard-api';
 import WxeApi from 'wxe-api';
 
@@ -72,3 +72,9 @@ export const dailyReportCron = process.env.DAILY_REPORT_CRON || '0 0 8 * * *';
 export const wxeapi = new WxeApi(auth.wxent);
 
 export const yktManager = new YktManager({ url: mysqlUrl });
+
+// HTTPS 相关
+export const enableHttps = process.env.ENABLE_HTTPS === 'true';
+export const httpsPort = process.env.HTTPS_PORT || 3443;
+export const privateKeyFilePath = process.env.PRIVETE_KEY_FILE_PATH || path.resolve(__dirname, '../ssl/example.key');
+export const certificateFilePath = process.env.CERTIFICATE_FILE_PATH || path.resolve(__dirname, '../ssl/example.crt');
