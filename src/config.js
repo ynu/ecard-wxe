@@ -11,6 +11,7 @@
 import path from 'path';
 import { YktManager } from 'ecard-api';
 import WxeApi from 'wxe-api';
+import debug from 'debug';
 
 export const port = process.env.PORT || 3000;
 export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
@@ -78,3 +79,7 @@ export const enableHttps = process.env.ENABLE_HTTPS === 'true';
 export const httpsPort = process.env.HTTPS_PORT || 3443;
 export const privateKeyFilePath = process.env.PRIVETE_KEY_FILE_PATH || path.resolve(__dirname, '../ssl/example.key');
 export const certificateFilePath = process.env.CERTIFICATE_FILE_PATH || path.resolve(__dirname, '../ssl/example.crt');
+
+// debug
+export const error = debug('ecard-wxe:error');
+export const info = debug('ecard-wxe:info');

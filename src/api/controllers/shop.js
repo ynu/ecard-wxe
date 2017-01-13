@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
 import { SUCCESS, SERVER_FAILED, OBJECT_IS_NOT_FOUND, UNAUTHORIZED } from 'nagu-validates';
-import { yktManager, auth, wxeapi, getShopTag } from '../../config';
+import { yktManager, auth, wxeapi, getShopTag, error } from '../../config';
 import * as wxeAuth from '../controllers/wxe-auth-middlewares';
 
 const router = new Router();

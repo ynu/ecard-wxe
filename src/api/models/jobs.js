@@ -3,7 +3,10 @@
 import { scheduleJob } from 'node-schedule';
 import moment from 'moment';
 import { roles, yktManager, wxeapi, dailyReportCron,
-  auth, getTag } from '../../config';
+  auth, getTag,
+  error } from '../../config';
+
+const info = require('debug')('ecard-wxe:report:info');
 
 const sendBill = async (bill, to, agentId) => {
   try {
@@ -18,7 +21,8 @@ const sendBill = async (bill, to, agentId) => {
     // 2.3. 推送微信通知
     return wxeapi.sendNews(to, agentId, [article]);
   } catch (e) {
-    console.log(e);
+    error('sendBill():', e.message);
+    error('sendBill():', e.stack);
     return Promise.reject(e);
   }
 };
@@ -27,58 +31,44 @@ export const reportDailyShopBill = async () => {
   try {
     // 0. 获取tag列表
     const tags = (await wxeapi.getTagList()).taglist;
+    info('tags count: ', tags.length);
 
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取商户账单列表
     const shopBills = await yktManager.getShopBills(null, yestoday);
-    console.log('shop bills: ', shopBills.length);
+    info('shop bills count: ', shopBills.length);
+
     // 2. 循环每个商户账单
     const result = shopBills.map(bill => {
       try {
         // 2.2. 找出tagId
         const tagname = getTag(roles.shopManager, bill.shopName);
         const tag = tags.find(t => t.tagname === tagname);
-        if (!tag) return Promise.resolve(null);
+        if (!tag) {
+          info('tagname is not exists: ', tagname);
+          return Promise.resolve({});
+        }
 
         // 2.3. 推送微信通知
         return sendBill(bill, { totag: `${tag.tagid}` }, auth.wxent.agentId);
       } catch (e) {
-        console.log('@@@@@@@@', e);
+        error('exception occured when send bill: ', bill);
+        error(e.message);
+        error(e.stack);
         return null;
       }
     });
     return Promise.all(result);
   } catch (e) {
-    console.log(JSON.stringify(e));
+    error('exception occured when reportDailyShopBill()');
+    error(e);
     throw e;
   }
 };
 
-// const reportDailyTotalBill = () => {
-//
-// };
-
-// const reportMonthlyDeviceBill = () => {
-//
-// };
-//
-// const reportMonthlyShopBill = () => {
-//
-// };
-//
-// const reportMonthlyTotalBill = () => {
-//
-// };
-
-const reportDaily = scheduleJob(dailyReportCron, () => {
-  // reportDailyDeviceBill();
-  reportDailyShopBill();
-  // reportDailyTotalBill();
+scheduleJob(dailyReportCron, async () => {
+  info('start to daily report. date:', Date.now());
+  const result = await reportDailyShopBill();
+  info('daily report is done.', result);
 });
-console.log('start the reportDaliy job.');
-
-// const reportMonthly = scheduleJob('0 0 8 0 1 *', () => {
-//   reportMonthlyDeviceBill();
-//   reportMonthlyShopBill();
-//   reportMonthlyTotalBill();
-// });
+info('start the reportDaliy job.');
