@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
 import { SUCCESS, SERVER_FAILED, OBJECT_IS_NOT_FOUND, UNAUTHORIZED } from 'nagu-validates';
-import { yktManager, auth, wxeapi, getShopTag, error } from '../../config';
+import { yktManager, auth, wxeapi, getShopTag, error, info } from '../../config';
 import * as wxeAuth from '../controllers/wxe-auth-middlewares';
 
 const router = new Router();
@@ -30,7 +30,7 @@ router.get('/:shopId/daily-bill/:accDate',
       // 3. 检查此tag中是否包含当前用户
       tag = await wxeapi.getTag(tag.tagid);
 
-      console.log('###', req.user);
+      info('current user:', req.user);
       if (tag.userlist.find(user => user.userid === req.user.UserId)) {
         next();
       } else {
@@ -43,12 +43,14 @@ router.get('/:shopId/daily-bill/:accDate',
   async (req, res) => {
     const { shopId, accDate } = req.params;
     try {
-      const shopBill = await yktManager.getShopBill(shopId, accDate);
       const subShopBills = await yktManager.getShopBills(shopId, accDate);
       const deviceBills = await yktManager.getDeviceBills(shopId, accDate);
-      res.send({ ret: SUCCESS, data: {
-        shopBill, subShopBills, deviceBills,
-      } });
+      res.send({ ret: SUCCESS,
+        data: {
+          shopBill: res.shopBill,
+          subShopBills,
+          deviceBills,
+        } });
     } catch (msg) {
       res.send({ ret: SERVER_FAILED, msg });
     }
