@@ -69,6 +69,10 @@ export const reportDailyShopBill = async () => {
 scheduleJob(dailyReportCron, async () => {
   info('start to daily report. date:', Date.now());
   const result = await reportDailyShopBill();
-  info('daily report is done.', result);
+  info('daily report is done.', {
+    发送成功: result.filter(r => r.errcode === 0).length,
+    发送失败: result.filter(r => r.errcode !== 0).length,
+    未发送: result.filter(r => r === {}).length,
+  });
 });
 info('start the reportDaliy job.');
