@@ -63,7 +63,7 @@
     "source-map-support": "0.4.5",
     "universal-router": "2.0.0",
     "whatwg-fetch": "1.0.0",
-    "wxe-api": "^0.3.0"
+    "wxe-api": "^1.0.0"
   },
   "devDependencies": {
     "assets-webpack-plugin": "^3.5.0",

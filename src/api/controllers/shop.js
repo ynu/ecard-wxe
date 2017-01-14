@@ -25,7 +25,7 @@ router.get('/:shopId/daily-bill/:accDate',
       const tags = await wxeapi.getTagList();
 
       // 2. 筛选出当前shop对应的tag
-      let tag = tags.taglist.find(t => t.tagname === getShopTag(shopBill.shopName));
+      let tag = tags.find(t => t.tagname === getShopTag(shopBill.shopName));
       if (!tag) return res.send({ ret: OBJECT_IS_NOT_FOUND });
       // 3. 检查此tag中是否包含当前用户
       tag = await wxeapi.getTag(tag.tagid);

@@ -30,7 +30,7 @@ const sendBill = async (bill, to, agentId) => {
 export const reportDailyShopBill = async () => {
   try {
     // 0. 获取tag列表
-    const tags = (await wxeapi.getTagList()).taglist;
+    const tags = await wxeapi.getTagList();
     info('tags count: ', tags.length);
 
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
