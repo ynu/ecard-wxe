@@ -9,7 +9,6 @@
 
 /* eslint-disable max-len */
 import path from 'path';
-import { YktManager } from 'ecard-api';
 import WxeApi from 'wxe-api';
 import debug from 'debug';
 
@@ -71,8 +70,6 @@ export const getShopTag = shopName => getTag(roles.shopManager, shopName);
 
 export const dailyReportCron = process.env.DAILY_REPORT_CRON || '0 0 8 * * *';
 export const wxeapi = new WxeApi(auth.wxent);
-
-export const yktManager = new YktManager({ url: mysqlUrl });
 
 // HTTPS 相关
 export const enableHttps = process.env.ENABLE_HTTPS === 'true';

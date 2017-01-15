@@ -2,8 +2,9 @@
 
 import { scheduleJob } from 'node-schedule';
 import moment from 'moment';
-import { roles, yktManager, wxeapi, dailyReportCron,
-  auth, getTag,
+import { YktManager } from 'ecard-api';
+import { roles, wxeapi, dailyReportCron,
+  auth, getTag, mysqlUrl,
   error } from '../../config';
 
 const info = require('debug')('ecard-wxe:report:info');
@@ -35,6 +36,7 @@ export const reportDailyShopBill = async () => {
 
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取商户账单列表
+    const yktManager = new YktManager(mysqlUrl);
     const shopBills = await yktManager.getShopBills(null, yestoday);
     info('shop bills count: ', shopBills.length);
 
