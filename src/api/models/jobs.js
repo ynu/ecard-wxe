@@ -36,6 +36,7 @@ export const reportDailyShopBill = async () => {
 
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取商户账单列表
+    info('connect to:', mysqlUrl);
     const yktManager = new YktManager(mysqlUrl);
     const shopBills = await yktManager.getShopBills(null, yestoday);
     info('shop bills count: ', shopBills.length);
