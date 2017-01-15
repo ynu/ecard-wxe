@@ -63,6 +63,8 @@ export const reportDailyShopBill = async () => {
     });
     return Promise.all(result);
   } catch (e) {
+    error('mysqlUrl:', mysqlUrl);
+    error('mysqlUrl ENV:', process.env.MYSQL_URL);
     error('exception occured when reportDailyShopBill()');
     error(e);
     throw e;
