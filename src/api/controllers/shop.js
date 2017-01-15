@@ -50,7 +50,7 @@ router.get('/:shopId/daily-bill/:accDate',
     const { shopId, accDate } = req.params;
     // 0. 取出当前账单
     try {
-      const yktManager = new YktManager(mysqlUrl);
+      const yktManager = new YktManager({ url: mysqlUrl });
       const shopBill = await yktManager.getShopBill(shopId, accDate);
       if (!shopBill) return res.send({ ret: OBJECT_IS_NOT_FOUND });
       res.shopBill = shopBill;
@@ -77,7 +77,7 @@ router.get('/:shopId/daily-bill/:accDate',
   async (req, res) => {
     const { shopId, accDate } = req.params;
     try {
-      const yktManager = new YktManager(mysqlUrl);
+      const yktManager = new YktManager({ url: mysqlUrl });
       const subShopBills = await yktManager.getShopBills(shopId, accDate);
       const deviceBills = await yktManager.getDeviceBills(shopId, accDate);
       res.send({ ret: SUCCESS,

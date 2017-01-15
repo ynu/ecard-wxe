@@ -37,7 +37,7 @@ export const reportDailyShopBill = async () => {
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取商户账单列表
     info('connect to:', mysqlUrl);
-    const yktManager = new YktManager(mysqlUrl);
+    const yktManager = new YktManager({ url: mysqlUrl });
     const shopBills = await yktManager.getShopBills(null, yestoday);
     info('shop bills count: ', shopBills.length);
 
@@ -63,8 +63,6 @@ export const reportDailyShopBill = async () => {
     });
     return Promise.all(result);
   } catch (e) {
-    error('mysqlUrl:', mysqlUrl);
-    error('mysqlUrl ENV:', process.env.MYSQL_URL);
     error('exception occured when reportDailyShopBill()');
     error(e);
     throw e;
