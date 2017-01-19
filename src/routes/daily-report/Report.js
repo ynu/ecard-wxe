@@ -10,6 +10,7 @@ import EnsureSignupWxe from '../../components/WeChat/EnsureSignupWxe';
 import dailyActions from '../../actions/daily';
 import SubShopBill from './SubShopBill';
 import DeviceBill from './DeviceBill';
+import ShopBill from './ShopBill';
 
 class Report extends React.Component {
   static propTypes = {
@@ -32,17 +33,8 @@ class Report extends React.Component {
         <EnsureSignupWxe />
         <PageHeader title={shopBill.shopName} />
         <div className="page__bd">
-          <Preview>
-            <PreviewHeader>
-              <PreviewItem label="合计金额" value={formatMoney(shopBill.crAmt, '￥')} />
-            </PreviewHeader>
-            <PreviewBody>
-              <PreviewItem label="消费笔数" value={`${formatNumber(shopBill.transCnt)}笔`} />
-            </PreviewBody>
-            <PreviewBody>
-              <PreviewItem label="报表日期" value={accDate} />
-            </PreviewBody>
-          </Preview>
+          <ShopBill bill={shopBill} accDate={accDate} />
+
           <CellsTitle>子商户</CellsTitle>
           <Cells>
             { subShopBills.length
