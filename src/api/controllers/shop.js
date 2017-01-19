@@ -15,6 +15,14 @@ router.get('/:shopId/daily-bill/:accDate',
     credentialsRequired: true,
     getToken: wxeAuth.getToken,
   }),
+  // 规整输入参数
+  (req, res, next) => {
+    let { shopId, accDate } = req.params;
+    shopId = `${parseInt(shopId, 10)}`;
+    accDate = `${parseInt(accDate, 10)}`;
+    req.params = { shopId, accDate };
+    next();
+  },
   // 检查当前用户是否有权限
   async (req, res, next) => {
     try {
