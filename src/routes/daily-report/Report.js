@@ -35,14 +35,14 @@ class Report extends React.Component {
         <div className="page__bd">
           <ShopBill bill={shopBill} accDate={accDate} />
 
-          <CellsTitle>子商户</CellsTitle>
+          <CellsTitle>子商户({subShopBills.length || 0})</CellsTitle>
           <Cells>
             { subShopBills.length
               ? subShopBills.map(bill => <SubShopBill bill={bill} />)
               : <LoadMore showLine>暂无数据</LoadMore>
             }
           </Cells>
-          <CellsTitle>设备</CellsTitle>
+          <CellsTitle>设备({deviceBills.length || 0})</CellsTitle>
           <Cells>
             {
               deviceBills.length
