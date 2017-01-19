@@ -156,7 +156,7 @@ app.listen(port, () => {
 });
 
 // 启用https
-if (true) {
+if (enableHttps) {
   const privateKey = fs.readFileSync(privateKeyFilePath, 'utf8');
   const certificate = fs.readFileSync(certificateFilePath, 'utf8');
 
