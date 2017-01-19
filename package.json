@@ -28,7 +28,7 @@
     "cookie-parser": "1.4.3",
     "core-js": "2.4.1",
     "debug": "^2.6.0",
-    "ecard-api": "0.0.7",
+    "ecard-api": "0.2.0",
     "express": "4.14.0",
     "express-graphql": "0.5.4",
     "express-jwt": "5.1.0",
