@@ -4,7 +4,7 @@ import { scheduleJob } from 'node-schedule';
 import moment from 'moment';
 import { YktManager } from 'ecard-api';
 import { roles, wxeapi, dailyReportCron,
-  auth, getTag, mysqlUrl,
+  auth, getTag, mysqlUrl, dailyReportPicUrl, host,
   error } from '../../config';
 
 const info = require('debug')('ecard-wxe:report:info');
@@ -13,10 +13,10 @@ const sendBill = async (bill, to, agentId) => {
   try {
     // 生成消息文本
     const article = {
-      title: `${bill.shopName}日结单(${bill.accDate})`,
+      title: `${bill.shopName}日账单(${bill.accDate})`,
       description: `消费金额：${bill.crAmt}元，共${bill.transCnt}笔。`,
-      url: `http://ecard-wxe.ynu.edu.cn/shop/${bill.shopId}/daily-bill/${bill.accDate}`,
-      picurl: 'http://www.ynu.edu.cn/images/content/2013-12/20131022162236810671.jpg',
+      url: `http://${host}/shop/${bill.shopId}/daily-bill/${bill.accDate}`,
+      picurl: dailyReportPicUrl,
     };
 
     // 2.3. 推送微信通知

@@ -65,6 +65,9 @@ export const roles = {
 };
 export const monitors = process.env.MONITOR_USERID || 'na57';
 
+export const daliyReportPicUrl = process.env.DAILY_REPORT_PICURL || 'http://www.ynu.edu.cn/images/content/2013-12/20131022162236810671.jpg';
+export const monthlyReportPicUrl = process.env.MONTHLY_REPORT_PICURL;
+
 export const getTag = (role, id) => `${tagPrefix}_${role}_${id}`;
 export const getShopTag = shopName => getTag(roles.shopManager, shopName);
 
