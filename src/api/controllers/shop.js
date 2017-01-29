@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
 import { YktManager } from 'ecard-api';
+import fetch from 'node-fetch';
 import { SUCCESS, SERVER_FAILED, OBJECT_IS_NOT_FOUND, UNAUTHORIZED } from 'nagu-validates';
-import { auth, wxeapi, getShopTag, error, info, mysqlUrl } from '../../config';
+import { auth, wxeapi, getShopTag, error, info, mysqlUrl,
+  ecardApiHost as apiHost } from '../../config';
 import * as wxeAuth from '../controllers/wxe-auth-middlewares';
 
 const getTagList = () => wxeapi.getTagList();
@@ -25,19 +27,23 @@ router.get('/:shopId/daily-bill/:accDate',
   },
   // 检查当前用户是否有权限
   async (req, res, next) => {
-    try {
-      const { shopId, accDate } = req.params;
-      const userid = req.user.UserId;
-      const yktManager = new YktManager({ url: mysqlUrl });
+    const { shopId, accDate } = req.params;
+    const userid = req.user.UserId;
 
+    try {
       // 0. 取当前商户账单
-      res.shopBill = await yktManager.getShopBill(shopId, accDate);
-      if (!res.shopBill) {
+      const shopBillUrl = `${apiHost}/shop/${shopId}/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
+      const shopBillResult = await (await fetch(shopBillUrl)).json();
+      if (shopBillResult.ret !== 0) {
         error('读取当前商户账单失败, shopId:', shopId, 'accDate:', accDate);
-        res.send({ ret: OBJECT_IS_NOT_FOUND });
+        error('Result:', shopBillResult);
+        res.send(shopBillResult);
         return;
       }
+      res.shopBill = shopBillResult.data;
+
       // 1. 获取商户的所有祖先节点；
+      const yktManager = new YktManager({ url: mysqlUrl });
       const ancestors = await yktManager.getAncestorShops(shopId);
       info('ancestors of the shop:', ancestors.map(s => s.shopId));
 
@@ -60,6 +66,7 @@ router.get('/:shopId/daily-bill/:accDate',
       info('tagPromises count:', tagPromises.length);
 
       const tagDetails = await Promise.all(tagPromises);
+
       // 3.3 获取所有tag对应的所有用户
       const users = tagDetails.map(td => td.userlist)
         .reduce((userlist, cur) => userlist.concat(cur), []);
@@ -78,20 +85,29 @@ router.get('/:shopId/daily-bill/:accDate',
       res.send({ ret: SERVER_FAILED, msg: e });
     }
   },
-  // 发送账单数据
+  // 由api获取数据
   async (req, res) => {
     const { shopId, accDate } = req.params;
     try {
-      const yktManager = new YktManager({ url: mysqlUrl });
-      const subShopBills = await yktManager.getShopBills(shopId, accDate);
-      const deviceBills = await yktManager.getDeviceBills(shopId, accDate);
-      res.send({ ret: SUCCESS,
+      const subShopBillsUrl = `${apiHost}/shop/${shopId}/sub-shop-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
+      info('Url:', subShopBillsUrl);
+      const subShopBillsResult = await (await fetch(subShopBillsUrl)).json();
+
+      const deviceBillsUrl = `${apiHost}/shop/${shopId}/device-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
+      info('Url:', deviceBillsUrl);
+      const deviceBillsResult = await (await fetch(deviceBillsUrl)).json();
+
+      res.json({
+        ret: subShopBillsResult.ret || deviceBillsResult.ret,
         data: {
           shopBill: res.shopBill,
-          subShopBills,
-          deviceBills,
-        } });
+          subShopBills: subShopBillsResult.data,
+          deviceBills: deviceBillsResult.data,
+        },
+      });
     } catch (msg) {
+      error(msg.message);
+      error(msg.stack);
       res.send({ ret: SERVER_FAILED, msg });
     }
   }
