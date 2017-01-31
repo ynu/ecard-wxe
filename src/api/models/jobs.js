@@ -93,6 +93,7 @@ info('start the reportDaliy job.');
 
 scheduleJob('0 0 6 * * *', () => {
   console.log('cache size:', cache.size());
+  console.log('cache hits:', cache.hits());
   info('cache keys:', cache.keys());
 });
 info('start to cache size report job.');
