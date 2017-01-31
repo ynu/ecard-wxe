@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
-import { YktManager } from 'ecard-api';
 import fetch from 'node-fetch';
 import { SUCCESS, SERVER_FAILED, OBJECT_IS_NOT_FOUND, UNAUTHORIZED } from 'nagu-validates';
 import { auth, wxeapi, getShopTag, error, info, mysqlUrl,
   ecardApiHost as apiHost } from '../../config';
 import * as wxeAuth from '../controllers/wxe-auth-middlewares';
+import * as middlewares from './middlewares';
 
 const getTagList = () => wxeapi.getTagList();
 const router = new Router();
@@ -17,6 +17,7 @@ router.get('/:shopId/daily-bill/:accDate',
     credentialsRequired: true,
     getToken: wxeAuth.getToken,
   }),
+
   // 规整输入参数
   (req, res, next) => {
     let { shopId, accDate } = req.params;
@@ -25,29 +26,27 @@ router.get('/:shopId/daily-bill/:accDate',
     req.params = { shopId, accDate };
     next();
   },
+
+  // 获取微信企业号tag列表
+  middlewares.getTagList(),
+
+  // 获取当前商户账单
+  middlewares.fetchShopBill(),
+
+  // 获取当前商户的祖先节点
+  middlewares.fetchAncestorShops(),
+
   // 检查当前用户是否有权限
   async (req, res, next) => {
-    const { shopId, accDate } = req.params;
     const userid = req.user.UserId;
 
     try {
-      // 0. 取当前商户账单
-      const shopBillUrl = `${apiHost}/shop/${shopId}/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
-      const shopBillResult = await (await fetch(shopBillUrl)).json();
-      if (shopBillResult.ret !== 0) {
-        error('读取当前商户账单失败, shopId:', shopId, 'accDate:', accDate);
-        error('Result:', shopBillResult);
-        res.send(shopBillResult);
-        return;
-      }
-      res.shopBill = shopBillResult.data;
-
       // 1. 获取商户的所有祖先节点；
-      const yktManager = new YktManager({ url: mysqlUrl });
-      const ancestors = await yktManager.getAncestorShops(shopId);
+      const ancestors = res.ancestorShops;
       info('ancestors of the shop:', ancestors.map(s => s.shopId));
 
       // 2. 根据当前商户及所有祖先节点获取tags；
+      console.time('检查权限耗时');
       const tagnames = [
         ...ancestors.map(s => s.shopName),
         res.shopBill.shopName,
@@ -56,7 +55,7 @@ router.get('/:shopId/daily-bill/:accDate',
 
       // 3. 获取所有tags对应的用户列表；
       // 3.1 获取所有tag列表
-      const taglist = await getTagList();
+      const taglist = req.tagList;
       // 3.2 获取所有tag的详细信息
       const tagPromises = tagnames.map(tagname => {
         const tag = taglist.find(t => t.tagname === tagname);
@@ -74,19 +73,21 @@ router.get('/:shopId/daily-bill/:accDate',
       // 4. 判断用户是否在用户列表中。
       if (users.some(u => u.userid === userid)) {
         info('用户权限检查通过');
+        console.timeEnd('检查权限耗时');
         next();
       } else {
         info('用户权限检查失败');
         res.send({ ret: UNAUTHORIZED });
       }
     } catch (e) {
-      error('检查当前用户是否有权限错误:', e.message);
-      error('检查当前用户是否有权限错误:', e.stack);
+      error('检查当前用户是否有权限-错误:', e.message);
+      error('检查当前用户是否有权限-错误:', e.stack);
       res.send({ ret: SERVER_FAILED, msg: e });
     }
   },
   // 由api获取数据
   async (req, res) => {
+    console.time('由api获取数据');
     const { shopId, accDate } = req.params;
     try {
       const subShopBillsUrl = `${apiHost}/shop/${shopId}/sub-shop-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
@@ -96,7 +97,7 @@ router.get('/:shopId/daily-bill/:accDate',
       const deviceBillsUrl = `${apiHost}/shop/${shopId}/device-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
       info('Url:', deviceBillsUrl);
       const deviceBillsResult = await (await fetch(deviceBillsUrl)).json();
-
+      console.timeEnd('由api获取数据');
       res.json({
         ret: subShopBillsResult.ret || deviceBillsResult.ret,
         data: {

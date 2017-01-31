@@ -51,7 +51,7 @@ export const roles = {
 };
 export const monitors = process.env.MONITOR_USERID || 'na57';
 
-export const daliyReportPicUrl = process.env.DAILY_REPORT_PICURL || 'http://www.ynu.edu.cn/images/content/2013-12/20131022162236810671.jpg';
+export const dailyReportPicUrl = process.env.DAILY_REPORT_PICURL;
 export const monthlyReportPicUrl = process.env.MONTHLY_REPORT_PICURL;
 
 export const getTag = (role, id) => `${tagPrefix}_${role}_${id}`;
@@ -72,3 +72,9 @@ export const info = debug('ecard-wxe:info');
 
 // ecard-api
 export const ecardApiHost = process.env.ECARD_API_HOST || 'http://ecard-api.ynu.edu.cn';
+
+// 缓存Key
+export const TAG_LIST = 'wxeapi:getTagList';
+export const CACHE_TIME_10_DAYS = 10 * 24 * 60 * 60 * 1000;
+export const getShopBillCacheKey = (shopId, accDate) => `ecard-wxe:shopBill:${shopId}:${accDate}`;
+export const getShopAncestorsCacheKey = shopId => `ecard-wxe:shop:ancestors:${shopId}`;
