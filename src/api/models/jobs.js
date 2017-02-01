@@ -6,10 +6,11 @@ import { YktManager } from 'ecard-api';
 import cache from 'memory-cache';
 import { roles, wxeapi, dailyReportCron,
   auth, getTag, mysqlUrl, dailyReportPicUrl, host,
-  error, TAG_LIST, CACHE_TIME_10_DAYS,
-  getShopBillCacheKey, getShopAncestorsCacheKey } from '../../config';
-
-const info = require('debug')('ecard-wxe:report:info');
+  error, info, TAG_LIST, CACHE_TIME_10_DAYS,
+  getShopBillCacheKey, getShopAncestorsCacheKey,
+  getShopDailyBillsCacheKey, getDeviceBillsCacheKey,
+  getSubShopDailyBillsCacheKey } from '../../config';
+import * as shopModel from './cachedShop';
 
 const sendBill = async (bill, to, agentId) => {
   try {
@@ -30,7 +31,37 @@ const sendBill = async (bill, to, agentId) => {
   }
 };
 
-export const reportDailyShopBill = async () => {
+const cacheDailyData = async day => {
+  // 1. 缓存指定日期的所有日账单
+  const shopBills = await shopModel.fetchShopDailyBills(day, {
+    key: getShopDailyBillsCacheKey(day),
+    expire: CACHE_TIME_10_DAYS,
+  });
+  // 2. 缓存每个商户的所有数据
+  const billPromises = shopBills.map(bill => {
+    // 2.1. 缓存每一个商户的日账单
+    const pBill = shopModel.fetchDailyBill(bill.shopId, day, {
+      key: getShopBillCacheKey(bill.shopId, day),
+      expire: CACHE_TIME_10_DAYS,
+    });
+
+    // 2.2. 缓存每个商户的子商户日账单列表
+    const pSubShopBills = shopModel.fetchSubShopDailyBills(bill.shopId, day, {
+      key: getSubShopDailyBillsCacheKey(bill.shopId, day),
+      expire: CACHE_TIME_10_DAYS,
+    });
+
+    // 2.3. 缓存每个商户的设备日账单列表
+    const pDeviceBills = shopModel.fetchDeviceDailyBills(bill.shopId, day, {
+      key: getDeviceBillsCacheKey(bill.shopId, day),
+      expire: CACHE_TIME_10_DAYS,
+    });
+    return Promise.all([pBill, pSubShopBills, pDeviceBills]);
+  });
+  await Promise.all(billPromises);
+};
+
+const reportDailyShopBill = async () => {
   try {
     // 0. 从远程获取tag列表，并缓存
     const tags = await wxeapi.getTagList();
@@ -91,9 +122,22 @@ scheduleJob(dailyReportCron, async () => {
 });
 info('start the reportDaliy job.');
 
-scheduleJob('0 0 6 * * *', () => {
+scheduleJob('0 30 * * * *', () => {
   console.log('cache size:', cache.size());
-  console.log('cache hits:', cache.hits());
-  info('cache keys:', cache.keys());
 });
 info('start to cache size report job.');
+
+scheduleJob('0 0 6 * * *', async () => {
+  console.time('缓存数据');
+  try {
+    const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
+    await cacheDailyData(yestoday);
+    console.log(cache.size());
+  } catch (e) {
+    error('缓存数据出错', e.message);
+    error(e.stack);
+  } finally {
+    console.timeEnd('缓存数据');
+  }
+  info('完成上一日所有数据缓存');
+});
