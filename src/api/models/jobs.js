@@ -78,14 +78,6 @@ const reportDailyShopBill = async () => {
     // 2. 循环每个商户账单
     const result = shopBills.map(bill => {
       try {
-        // 2.1 缓存每一个shopBill
-        cache.put(getShopBillCacheKey(bill.shopId, yestoday), bill, CACHE_TIME_10_DAYS);
-
-        // 计算每个商户的祖先节点并缓存，以提高用户浏览速度
-        yktManager.getAncestorShops(bill).then(ancestors => {
-          cache.put(getShopAncestorsCacheKey(bill.shopId), ancestors, CACHE_TIME_10_DAYS);
-        });
-
         // 2.2. 找出tagId
         const tagname = getTag(roles.shopManager, bill.shopName);
         const tag = tags.find(t => t.tagname === tagname);
