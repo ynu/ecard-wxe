@@ -78,4 +78,3 @@ export const TAG_LIST = 'wxeapi:getTagList';
 export const CACHE_TIME_10_DAYS = 10 * 24 * 60 * 60 * 1000;
 export const getShopBillCacheKey = (shopId, accDate) => `ecard-wxe:shopBill:${shopId}:${accDate}`;
 export const getShopAncestorsCacheKey = shopId => `ecard-wxe:shop:ancestors:${shopId}`;
-cache.debug(true);
