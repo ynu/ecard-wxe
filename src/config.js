@@ -71,10 +71,13 @@ export const error = debug('ecard-wxe:error');
 export const info = debug('ecard-wxe:info');
 
 // ecard-api
-export const ecardApiHost = process.env.ECARD_API_HOST || 'http://ecard-api.ynu.edu.cn';
+export const ecardApiHost = process.env.ECARD_API_HOST || 'http://api.ynu.edu.cn/ecard/v1';
 
 // 缓存Key
 export const TAG_LIST = 'wxeapi:getTagList';
 export const CACHE_TIME_10_DAYS = 10 * 24 * 60 * 60 * 1000;
 export const getShopBillCacheKey = (shopId, accDate) => `ecard-wxe:shopBill:${shopId}:${accDate}`;
 export const getShopAncestorsCacheKey = shopId => `ecard-wxe:shop:ancestors:${shopId}`;
+export const getShopDailyBillsCacheKey = accDate => `ecard-wxe:shopbills:${accDate}`;
+export const getSubShopDailyBillsCacheKey = (fShopId, accDate) => `ecard-wxe:subShopBills:${fShopId}:${accDate}`;
+export const getDeviceBillsCacheKey = (shopId, accDate) => `ecard-wxe:deviceDailyBills:${shopId}:${accDate}`;
