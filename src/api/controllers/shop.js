@@ -1,13 +1,15 @@
+/*
+eslint-disable no-param-reassign, no-console
+ */
+
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
-import fetch from 'node-fetch';
-import { SUCCESS, SERVER_FAILED, OBJECT_IS_NOT_FOUND, UNAUTHORIZED } from 'nagu-validates';
-import { auth, wxeapi, getShopTag, error, info, mysqlUrl,
-  ecardApiHost as apiHost } from '../../config';
+import { SUCCESS, SERVER_FAILED, UNAUTHORIZED } from 'nagu-validates';
+import { auth, wxeapi, getShopTag, error, info } from '../../config';
 import * as wxeAuth from '../controllers/wxe-auth-middlewares';
-import * as middlewares from './middlewares';
+import * as shopMiddlewares from './shop-middlewares';
+import * as wxeMiddlewares from './wxe-middlewares';
 
-const getTagList = () => wxeapi.getTagList();
 const router = new Router();
 
 router.get('/:shopId/daily-bill/:accDate',
@@ -28,23 +30,22 @@ router.get('/:shopId/daily-bill/:accDate',
   },
 
   // 获取微信企业号tag列表
-  middlewares.getTagList(),
+  wxeMiddlewares.getTagList(),
 
   // 获取当前商户账单
-  middlewares.fetchShopBill(),
+  shopMiddlewares.fetchShopBill(),
 
   // 获取当前商户的祖先节点
-  middlewares.fetchAncestorShops(),
+  shopMiddlewares.fetchAncestorShops(),
 
   // 检查当前用户是否有权限
   async (req, res, next) => {
     const userid = req.user.UserId;
-
+    info('Current user is: ', userid);
     try {
       // 1. 获取商户的所有祖先节点；
       const ancestors = res.ancestorShops;
       info('ancestors of the shop:', ancestors.map(s => s.shopId));
-
       // 2. 根据当前商户及所有祖先节点获取tags；
       console.time('检查权限耗时');
       const tagnames = [
@@ -85,33 +86,22 @@ router.get('/:shopId/daily-bill/:accDate',
       res.send({ ret: SERVER_FAILED, msg: e });
     }
   },
-  // 由api获取数据
-  async (req, res) => {
-    console.time('由api获取数据');
-    const { shopId, accDate } = req.params;
-    try {
-      const subShopBillsUrl = `${apiHost}/shop/${shopId}/sub-shop-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
-      info('Url:', subShopBillsUrl);
-      const subShopBillsResult = await (await fetch(subShopBillsUrl)).json();
 
-      const deviceBillsUrl = `${apiHost}/shop/${shopId}/device-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
-      info('Url:', deviceBillsUrl);
-      const deviceBillsResult = await (await fetch(deviceBillsUrl)).json();
-      console.timeEnd('由api获取数据');
-      res.json({
-        ret: subShopBillsResult.ret || deviceBillsResult.ret,
-        data: {
-          shopBill: res.shopBill,
-          subShopBills: subShopBillsResult.data,
-          deviceBills: deviceBillsResult.data,
-        },
-      });
-    } catch (msg) {
-      error(msg.message);
-      error(msg.stack);
-      res.send({ ret: SERVER_FAILED, msg });
-    }
-  }
+  // 获取子商户日账单列表
+  shopMiddlewares.fetchSubShopDailyBills(),
+
+  // 获取商户设备日账单列表
+  shopMiddlewares.fetchDeviceDailyBills(),
+
+  // 返回结果
+  async (req, res) => res.json({
+    ret: SUCCESS,
+    data: {
+      shopBill: res.shopBill,
+      subShopBills: res.subShopBills,
+      deviceBills: res.deviceBills,
+    },
+  })
 );
 
 export default router;
