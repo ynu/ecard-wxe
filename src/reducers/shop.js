@@ -2,7 +2,11 @@ import { combineReducers } from 'redux';
 import { FETCH_DONE, FETCHING } from '../actions/common';
 
 const dailyBill = (state = {
-  shopBill: {},
+  shopBill: {
+    crAmt: '0',
+    drAmt: '0',
+    transCnt: '0',
+  },
   subShopBills: [],
   deviceBills: [],
 }, action) => {

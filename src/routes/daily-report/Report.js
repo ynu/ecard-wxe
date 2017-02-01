@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { Toast, CellsTitle, Cells, LoadMore,
   Preview, PreviewHeader, PreviewBody, PreviewItem } from 'react-weui';
 import { connect } from 'react-redux';
-import { formatMoney, formatNumber } from 'accounting';
 import Container from '../../components/Weui/Container';
 import PageHeader from '../../components/PageHeader';
 import Footer from '../../components/Footer';
@@ -46,7 +45,7 @@ class Report extends React.Component {
           <Cells>
             {
               deviceBills.length
-              ? deviceBills.map(bill => <DeviceBill bill={bill} />)
+              ? deviceBills.map(bill => <DeviceBill bill={bill} key={bill.deviceId} />)
               : <LoadMore showLine>暂无数据</LoadMore>
             }
           </Cells>
