@@ -14,7 +14,7 @@ export const fetchDailyBill = async (shopId, accDate) => {
       info('fetchDailyBill is successed');
       return shopBillResult.data;
     }
-    error('Error Result:', shopBillResult);
+    error('远程ecard-api调用失败:', shopBillResult);
     throw new Error('fetchDailyBill failed');
   } catch (e) {
     error('fetchDailyBill failed, shopId:', shopId, 'accDate:', accDate);
@@ -69,6 +69,22 @@ export const fetchDeviceDailyBills = async (shopId, accDate) => {
     error(msg.message);
     error(msg.stack);
     throw msg;
+  }
+};
+
+/*
+获取指定日期的所有日账单
+ */
+export const fetchShopDailyBills = async accDate => {
+  try {
+    const yktManager = new YktManager({ url: mysqlUrl });
+    const shopBills = await yktManager.getShopBills(null, accDate);
+    return shopBills;
+  } catch (e) {
+    error('fetchShopDailyBills failed');
+    error(e.message);
+    error(e.stack);
+    return [];
   }
 };
 
