@@ -1,9 +1,13 @@
+/*
+由远程服务器读取Shop相关数据
+ */
+
 import fetch from 'node-fetch';
-import { YktManager } from 'ecard-api';
-import { auth, mysqlUrl,
-  error, info, ecardApiHost } from '../../config';
+import { auth, error, info, ecardApiHost } from '../../config';
 
-
+/*
+获取指定商户指定日期的日账单
+ */
 export const fetchDailyBill = async (shopId, accDate) => {
   info(`fetch shopbill(id: ${shopId}, accDate: ${accDate}) from remote`);
   const shopBillUrl = `${ecardApiHost}/shop/${shopId}/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
@@ -22,12 +26,42 @@ export const fetchDailyBill = async (shopId, accDate) => {
   }
 };
 
+/*
+获取指定日期所有商户的日账单
+ */
+export const fetchShopDailyBills = async accDate => {
+  info('fetch daliyBills for all shops.');
+  const url = `${ecardApiHost}/shop/all/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
+  try {
+    const shopBillsResult = await (await fetch(url)).json();
+    // 远处获取数据成功
+    if (shopBillsResult.ret === 0) {
+      info('fetchShopDailyBills is successed');
+      return shopBillsResult.data;
+    }
+    error('远程ecard-api调用失败:', shopBillsResult);
+    throw new Error('fetchShopDailyBills failed');
+  } catch (e) {
+    error('fetchShopDailyBills failed,', 'accDate:', accDate);
+    throw e;
+  }
+};
+
+/*
+获取指定商户节点的所有祖先节点
+ */
 export const fetchAncestorShops = async shopId => {
   info('fetch ancestorShops from remote');
+
+  const url = `${ecardApiHost}/shop/${shopId}/ancestors?token=${ecardApiToken}`;
   try {
-    const yktManager = new YktManager({ url: mysqlUrl });
-    const ancestors = await yktManager.getAncestorShops(shopId);
-    return ancestors;
+    const ancestorShopsResult = await (await fetch(url)).josn();
+    if (ancestorShopsResult.ret === 0) {
+      info('fetch ancestorShops is successed.');
+      return ancestorShopsResult.data;
+    }
+    error('远程ecard-api调用失败:', ancestorShopsResult);
+    throw new Error('fetchAncestorShops failed');
   } catch (e) {
     error('fetch ancestorShops failed');
     error(e.message);
@@ -69,22 +103,6 @@ export const fetchDeviceDailyBills = async (shopId, accDate) => {
     error(msg.message);
     error(msg.stack);
     throw msg;
-  }
-};
-
-/*
-获取指定日期的所有日账单
- */
-export const fetchShopDailyBills = async accDate => {
-  try {
-    const yktManager = new YktManager({ url: mysqlUrl });
-    const shopBills = await yktManager.getShopBills(null, accDate);
-    return shopBills;
-  } catch (e) {
-    error('fetchShopDailyBills failed');
-    error(e.message);
-    error(e.stack);
-    return [];
   }
 };
 
