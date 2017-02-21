@@ -52,10 +52,9 @@ export const fetchShopDailyBills = async accDate => {
  */
 export const fetchAncestorShops = async shopId => {
   info('fetch ancestorShops from remote');
-
-  const url = `${ecardApiHost}/shop/${shopId}/ancestors?token=${ecardApiToken}`;
+  const url = `${ecardApiHost}/shop/${shopId}/ancestors?token=${auth.ecardApiToken}`;
   try {
-    const ancestorShopsResult = await (await fetch(url)).josn();
+    const ancestorShopsResult = await (await fetch(url)).json();
     if (ancestorShopsResult.ret === 0) {
       info('fetch ancestorShops is successed.');
       return ancestorShopsResult.data;
