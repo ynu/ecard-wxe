@@ -2,12 +2,10 @@
 eslint-disable no-console, no-param-reassign, no-shadow
  */
 
-import fetch from 'node-fetch';
 import cache from 'memory-cache';
 import { SERVER_FAILED } from 'nagu-validates';
-import { YktManager } from 'ecard-api';
-import { auth, wxeapi, error, info, mysqlUrl,
-  ecardApiHost as apiHost, TAG_LIST, CACHE_TIME_10_DAYS } from '../../config';
+import { wxeapi, error, info,
+  TAG_LIST, CACHE_TIME_10_DAYS } from '../../config';
 import * as shopModel from '../models/cachedShop';
 
 /*
