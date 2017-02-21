@@ -7,7 +7,7 @@ import * as model from './shop';
 import cacheProxy from './memory-cache-proxy';
 
 /*
-fetchShopBill({ shopId, sccDate, key, expire }): ShopBill
+fetchShopBill(shopId, sccDate, {key, expire }): ShopBill
 获取指定日期的商户账单
  */
 export const fetchDailyBill = (...args) =>
