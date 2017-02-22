@@ -104,4 +104,40 @@ router.get('/:shopId/daily-bill/:accDate',
   })
 );
 
+router.get('/:shopId/monthly-bill/:accDate',
+  // 确保用户已登录
+  expressJwt({
+    secret: auth.jwt.secret,
+    credentialsRequired: true,
+    getToken: wxeAuth.getToken,
+  }),
+
+  // 规整输入参数
+  (req, res, next) => {
+    let { shopId, accDate } = req.params;
+    shopId = `${parseInt(shopId, 10)}`;
+    accDate = `${parseInt(accDate, 10)}`;
+    req.params = { shopId, accDate };
+    next();
+  },
+
+  // 获取微信企业号tag列表
+  wxeMiddlewares.getTagList(),
+
+  // 获取商户月账单
+  shopMiddlewares.fetchShopMonthlyBill(),
+
+  // 获取子商户日账单列表
+  shopMiddlewares.fetchSubShopMonthlyBills(),
+
+  // 返回结果
+  async (req, res) => res.json({
+    ret: SUCCESS,
+    data: {
+      shopBill: res.shopBill,
+      subShopBills: res.subShopBills,
+    },
+  })
+);
+
 export default router;
