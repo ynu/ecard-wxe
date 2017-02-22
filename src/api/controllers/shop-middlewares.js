@@ -5,7 +5,8 @@ eslint-disable no-console, no-param-reassign, no-shadow
 import cache from 'memory-cache';
 import { SERVER_FAILED } from 'nagu-validates';
 import { wxeapi, error, info,
-  TAG_LIST } from '../../config';
+  TAG_LIST, getShopBillCacheKey, getShopAncestorsCacheKey,
+getSubShopBillsCacheKey } from '../../config';
 import * as shopModel from '../models/cachedShop';
 
 const TEN_DAYS = 10 * 24 * 60 * 60 * 1000;
@@ -74,7 +75,7 @@ export const fetchShopBill = (options = {}) => async (req, res, next) => {
   const accDate = getAccDate(req, res);
 
   cacheOptions = {
-    key: `ecard-wxe:shopBill:${shopId}:${accDate}`,
+    key: getShopBillCacheKey(shopId, accDate),
     expire: TEN_DAYS,
     ...cacheOptions,
   };
@@ -120,7 +121,7 @@ export const fetchAncestorShops = (options = {}) => async (req, res, next) => {
   const shopId = getShopId(req, res);
 
   cacheOptions = {
-    key: `ecard-wxe:shop:ancestors:${shopId}`,
+    key: getShopAncestorsCacheKey(shopId),
     expire: TEN_DAYS,
     ...cacheOptions,
   };
@@ -254,7 +255,7 @@ export const fetchShopMonthlyBill = (options = {}) => async (req, res, next) => 
   const accDate = getAccDate(req, res);
 
   cacheOptions = {
-    key: `ecard-wxe:shopMonthlyBill:${shopId}:${accDate}`,
+    key: getShopBillCacheKey(shopId, accDate),
     expire: TEN_DAYS,
     ...cacheOptions,
   };
@@ -304,7 +305,7 @@ export const fetchSubShopMonthlyBills = (options = {}) => async (req, res, next)
   const accDate = getAccDate(req, res);
 
   cacheOptions = {
-    key: `ecard-wxe:subShopMonthlyBills:${fShopId}:${accDate}`,
+    key: getSubShopBillsCacheKey(fShopId, accDate),
     expire: TEN_DAYS,
     ...cacheOptions,
   };

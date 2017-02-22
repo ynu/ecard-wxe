@@ -5,10 +5,9 @@ import moment from 'moment';
 import cache from 'memory-cache';
 import { roles, wxeapi, dailyReportCron,
   auth, getTag, dailyReportPicUrl, host,
-  error, info, TAG_LIST,
-  getShopBillCacheKey,
-  getShopDailyBillsCacheKey, getDeviceBillsCacheKey,
-  getSubShopDailyBillsCacheKey } from '../../config';
+  error, info, TAG_LIST, rootShopId,
+  getShopBillCacheKey, getDeviceBillsCacheKey,
+  getSubShopBillsCacheKey } from '../../config';
 import * as shopModel from './cachedShop';
 
 const TEN_DAYS = 10 * 24 * 60 * 60 * 1000;
@@ -42,7 +41,7 @@ const sendBill = async (bill, to, agentId) => {
 const cacheDailyData = async day => {
   // 1. 缓存指定日期的所有日账单
   const shopBills = await shopModel.fetchShopDailyBills(day, {
-    key: getShopDailyBillsCacheKey(day),
+    key: getSubShopBillsCacheKey(rootShopId, day),
     expire: TEN_DAYS,
   });
   // 2. 缓存每个商户的所有数据
@@ -55,7 +54,7 @@ const cacheDailyData = async day => {
 
     // 2.2. 缓存每个商户的子商户日账单列表
     const pSubShopBills = shopModel.fetchSubShopDailyBills(bill.shopId, day, {
-      key: getSubShopDailyBillsCacheKey(bill.shopId, day),
+      key: getSubShopBillsCacheKey(bill.shopId, day),
       expire: TEN_DAYS,
     });
 
@@ -79,7 +78,7 @@ const reportDailyShopBill = async () => {
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取商户账单列表
     const shopBills = await shopModel.fetchShopDailyBills(yestoday, {
-      key: getShopDailyBillsCacheKey(yestoday),
+      key: getSubShopBillsCacheKey(rootShopId, yestoday),
       expire: TEN_DAYS,
     });
 
