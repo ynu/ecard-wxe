@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Toast, CellsTitle, Cells, LoadMore,
-  Preview, PreviewHeader, PreviewBody, PreviewItem } from 'react-weui';
+import { Toast, CellsTitle, Cells, LoadMore } from 'react-weui';
 import { connect } from 'react-redux';
 import Container from '../../components/Weui/Container';
 import PageHeader from '../../components/PageHeader';
@@ -59,7 +58,7 @@ class Report extends React.Component {
 
 const mapStateToProps = state => ({
   toast: state.wechat.toast,
-  ...state.shop.dailyBill,
+  ...state.shop.report,
 });
 export default connect(mapStateToProps, {
   ...dailyActions,
