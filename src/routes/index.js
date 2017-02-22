@@ -17,6 +17,7 @@ export default {
   // Keep in mind, routes are evaluated in order
   children: [
     require('./daily-report').default,
+    require('./report').default,
 
     // place new routes before...
     require('./notFound').default,
