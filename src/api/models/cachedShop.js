@@ -29,3 +29,9 @@ export const fetchShops = (...args) =>
 
 export const fetchShopDailyBills = (...args) =>
   cacheProxy(model.fetchShopDailyBills, args[args.length - 1], args.slice(0, -1));
+
+export const fetchShopMonthlyBill = (...args) =>
+  cacheProxy(model.fetchMonthlyBill, args[args.length - 1], args.slice(0, -1));
+
+export const fetchSubShopMonthlyBills = (...args) =>
+    cacheProxy(model.fetchSubShopMonthlyBills, args[args.length - 1], args.slice(0, -1));
