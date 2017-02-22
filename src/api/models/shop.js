@@ -105,6 +105,45 @@ export const fetchDeviceDailyBills = async (shopId, accDate) => {
   }
 };
 
+/*
+获取指定商户指定日期的月账单
+ */
+export const fetchMonthlyBill = async (shopId, accDate) => {
+  info(`fetch shopMonthlybill(id: ${shopId}, accDate: ${accDate}) from remote`);
+  const url = `${ecardApiHost}/shop/${shopId}/monthly-bill/${accDate}?token=${auth.ecardApiToken}`;
+  try {
+    const shopBillResult = await (await fetch(url)).json();
+    // 远处获取数据成功
+    if (shopBillResult.ret === 0) {
+      return shopBillResult.data;
+    }
+    error('远程ecard-api调用失败:', shopBillResult);
+    throw new Error('fetchMonthlyBill failed');
+  } catch (e) {
+    error('fetchMonthlyBill failed, shopId:', shopId, 'accDate:', accDate);
+    throw e;
+  }
+};
+
+/*
+指定父商户Id和账单日期，获取所有子商户的月账单列表
+ */
+export const fetchSubShopMonthlyBills = async (fShopId, accDate) => {
+  try {
+    const url = `${ecardApiHost}/shop/${fShopId}/sub-shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
+    const subShopBillsResult = await (await fetch(url)).json();
+    // 远处获取数据成功
+    if (subShopBillsResult.ret === 0) {
+      return subShopBillsResult.data;
+    }
+    throw new Error('fetchSubShopMonthlyBills failed');
+  } catch (msg) {
+    error(msg.message);
+    error(msg.stack);
+    throw msg;
+  }
+};
+
 export const fetchShops = async () => {
 
 };
