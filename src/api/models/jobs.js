@@ -26,7 +26,7 @@ const sendBill = async (bill, to, agentId) => {
     const article = {
       title: `${bill.shopName}日账单(${bill.accDate})`,
       description: `消费金额：${bill.crAmt}元，共${bill.transCnt}笔。`,
-      url: `https://${host}/shop/${bill.shopId}/daily-bill/${bill.accDate}`,
+      url: `https://${host}/shop/${bill.shopId}/report/${bill.accDate}`,
       picurl: dailyReportPicUrl,
     };
 
