@@ -1,16 +1,11 @@
-FROM node:7
+FROM node:6.9.5-alpine
 
-ADD package.json /rsk/
-ADD LICENSE.txt /rsk/
-ADD src /rsk/src
-ADD tools /rsk/tools
-ADD ssl /rsk/ssl
-WORKDIR /rsk
+# Copy application files
+COPY ./build /usr/src/app
+WORKDIR /usr/src/app
 
-RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN npm install
-RUN ./node_modules/.bin/babel-node tools/run build --release
-EXPOSE 3000
+# Install Yarn and Node.js dependencies
+RUN npm install yarn --global --no-progress --silent --depth 0 && \
+    yarn install --production --no-progress
 
-RUN ls build
-CMD node build/server.js
+CMD [ "node", "server.js" ]
