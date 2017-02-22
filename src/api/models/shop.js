@@ -26,26 +26,26 @@ export const fetchDailyBill = async (shopId, accDate) => {
   }
 };
 
-/*
-获取指定日期所有商户的日账单
- */
-export const fetchShopDailyBills = async accDate => {
-  info('fetch daliyBills for all shops.');
-  const url = `${ecardApiHost}/shop/all/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
-  try {
-    const shopBillsResult = await (await fetch(url)).json();
-    // 远处获取数据成功
-    if (shopBillsResult.ret === 0) {
-      info('fetchShopDailyBills is successed');
-      return shopBillsResult.data;
-    }
-    error('远程ecard-api调用失败:', shopBillsResult);
-    throw new Error('fetchShopDailyBills failed');
-  } catch (e) {
-    error('fetchShopDailyBills failed,', 'accDate:', accDate);
-    throw e;
-  }
-};
+// /*
+// 获取指定日期所有商户的日账单
+//  */
+// export const fetchShopDailyBills = async accDate => {
+//   info('fetch daliyBills for all shops.');
+//   const url = `${ecardApiHost}/shop/all/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
+//   try {
+//     const shopBillsResult = await (await fetch(url)).json();
+//     // 远处获取数据成功
+//     if (shopBillsResult.ret === 0) {
+//       info('fetchShopDailyBills is successed');
+//       return shopBillsResult.data;
+//     }
+//     error('远程ecard-api调用失败:', shopBillsResult);
+//     throw new Error('fetchShopDailyBills failed');
+//   } catch (e) {
+//     error('fetchShopDailyBills failed,', 'accDate:', accDate);
+//     throw e;
+//   }
+// };
 
 /*
 获取指定商户节点的所有祖先节点
@@ -69,10 +69,16 @@ export const fetchAncestorShops = async shopId => {
   }
 };
 
+/*
+指定父商户Id和日期，获取子商户日账单列表
+ */
 export const fetchSubShopDailyBills = async (fShopId, accDate) => {
   try {
-    const subShopBillsUrl = `${ecardApiHost}/shop/${fShopId}/sub-shop-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
-    const subShopBillsResult = await (await fetch(subShopBillsUrl)).json();
+    let url = `${ecardApiHost}/shop/${fShopId}/sub-shop-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
+    if (fShopId === 0) {
+      url = `${ecardApiHost}/shop/all/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
+    }
+    const subShopBillsResult = await (await fetch(url)).json();
     // 远处获取数据成功
     if (subShopBillsResult.ret === 0) {
       info('fetchSubShopDailyBills is successed');

@@ -40,7 +40,7 @@ const sendBill = async (bill, to, agentId) => {
 
 const cacheDailyData = async day => {
   // 1. 缓存指定日期的所有日账单
-  const shopBills = await shopModel.fetchShopDailyBills(day, {
+  const shopBills = await shopModel.fetchSubShopDailyBills(rootShopId, day, {
     key: getSubShopBillsCacheKey(rootShopId, day),
     expire: TEN_DAYS,
   });
@@ -77,7 +77,7 @@ const reportDailyShopBill = async () => {
 
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取商户账单列表
-    const shopBills = await shopModel.fetchShopDailyBills(yestoday, {
+    const shopBills = await shopModel.fetchSubShopDailyBills(rootShopId, yestoday, {
       key: getSubShopBillsCacheKey(rootShopId, yestoday),
       expire: TEN_DAYS,
     });
