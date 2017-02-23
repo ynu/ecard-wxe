@@ -3,7 +3,7 @@
  */
 
 import fetch from 'node-fetch';
-import { auth, error, info, ecardApiHost } from '../../config';
+import { auth, error, info, ecardApiHost, rootShopId } from '../../config';
 
 /*
 获取指定商户指定日期的日账单
@@ -136,7 +136,10 @@ export const fetchMonthlyBill = async (shopId, accDate) => {
  */
 export const fetchSubShopMonthlyBills = async (fShopId, accDate) => {
   try {
-    const url = `${ecardApiHost}/shop/${fShopId}/sub-shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
+    let url = `${ecardApiHost}/shop/${fShopId}/sub-shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
+    if (fShopId === rootShopId) {
+      url = `${ecardApiHost}/shop/all/shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
+    }
     const subShopBillsResult = await (await fetch(url)).json();
     // 远处获取数据成功
     if (subShopBillsResult.ret === 0) {
@@ -148,8 +151,4 @@ export const fetchSubShopMonthlyBills = async (fShopId, accDate) => {
     error(msg.stack);
     throw msg;
   }
-};
-
-export const fetchShops = async () => {
-
 };
