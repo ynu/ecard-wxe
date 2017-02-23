@@ -9,3 +9,12 @@ export const getTagList = (...args) => {
   };
   cacheProxy(wxeapi.getTagList, [], cacheOption);
 };
+
+export const getTag = (tagid, options) => {
+  const cacheOption = {
+    key: `wxe:tag:${tagid}`,
+    expire: 60 * 60 * 1000, // one hour
+    ...options,
+  };
+  cacheProxy(wxeapi.getTag, [tagid], cacheOption);
+};

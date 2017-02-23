@@ -5,10 +5,11 @@ eslint-disable no-param-reassign, no-console
 import { Router } from 'express';
 import expressJwt from 'express-jwt';
 import { SUCCESS, SERVER_FAILED, UNAUTHORIZED } from 'nagu-validates';
-import { auth, wxeapi, getShopTag, error, info } from '../../config';
+import { auth, getShopTag, error, info } from '../../config';
 import * as wxeAuth from '../controllers/wxe-auth-middlewares';
 import * as shopMiddlewares from './shop-middlewares';
 import * as wxeMiddlewares from './wxe-middlewares';
+import * as wxeMondel from '../models/cachedWxeapi';
 
 const router = new Router();
 
@@ -60,7 +61,7 @@ router.get('/:shopId/daily-bill/:accDate',
       // 3.2 获取所有tag的详细信息
       const tagPromises = tagnames.map(tagname => {
         const tag = taglist.find(t => t.tagname === tagname);
-        if (tag) return wxeapi.getTag(tag.tagid);
+        if (tag) return wxeMondel.getTag(tag.tagid);
         return null;
       }).filter(p => p !== null);
       info('tagPromises count:', tagPromises.length);
