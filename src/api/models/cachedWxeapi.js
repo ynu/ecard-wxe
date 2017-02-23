@@ -7,7 +7,7 @@ export const getTagList = (...args) => {
     expire: 5 * 60 * 1000, // five minutes
     ...args.slice(0, -1),
   };
-  cacheProxy(wxeapi.getTagList, [], cacheOption);
+  return cacheProxy(wxeapi.getTagList.bind(wxeapi), cacheOption, []);
 };
 
 export const getTag = (tagid, options = {}) => {
@@ -16,5 +16,5 @@ export const getTag = (tagid, options = {}) => {
     expire: 60 * 60 * 1000, // one hour
     ...options,
   };
-  cacheProxy(wxeapi.getTag, [tagid], cacheOption);
+  return cacheProxy(wxeapi.getTag.bind(wxeapi), cacheOption, [tagid]);
 };

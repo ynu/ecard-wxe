@@ -61,7 +61,7 @@ export const error = debug('ecard-wxe:error');
 export const info = debug('ecard-wxe:info');
 
 // ecard-api
-export const ecardApiHost = process.env.ECARD_API_HOST || 'http://api.ynu.edu.cn/ecard/v1';
+export const ecardApiHost = process.env.ECARD_API_HOST || 'https://api.ynu.edu.cn/ecard/v1';
 export const rootShopId = 0;
 // 缓存Key
 export const TAG_LIST = 'wxeapi:getTagList';
