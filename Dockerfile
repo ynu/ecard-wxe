@@ -1,4 +1,4 @@
-FROM node:7
+FROM node:6.9.5-alpine
 
 ADD package.json /rsk/
 ADD LICENSE.txt /rsk/
@@ -12,5 +12,4 @@ RUN npm install
 RUN ./node_modules/.bin/babel-node tools/run build --release
 EXPOSE 3000
 
-RUN ls build
 CMD node build/server.js
