@@ -135,10 +135,11 @@ export const fetchMonthlyBill = async (shopId, accDate) => {
 指定父商户Id和账单日期，获取所有子商户的月账单列表
  */
 export const fetchSubShopMonthlyBills = async (fShopId, accDate) => {
+  let url;
   try {
-    let url = `${ecardApiHost}/shop/${fShopId}/sub-shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
+    url = `${ecardApiHost}/shop/${fShopId}/sub-shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
     if (fShopId === rootShopId) {
-      url = `${ecardApiHost}/shop/all/shop-monthly-bills/${accDate}?token=${auth.ecardApiToken}`;
+      url = `${ecardApiHost}/shop/all/monthly-bill/${accDate}?token=${auth.ecardApiToken}`;
     }
     const subShopBillsResult = await (await fetch(url)).json();
     // 远处获取数据成功
@@ -147,8 +148,8 @@ export const fetchSubShopMonthlyBills = async (fShopId, accDate) => {
     }
     throw new Error('fetchSubShopMonthlyBills failed');
   } catch (msg) {
+    error('获取子商户月账单失败:', url);
     error(msg.message);
-    error(msg.stack);
     throw msg;
   }
 };

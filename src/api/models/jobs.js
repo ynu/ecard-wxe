@@ -35,7 +35,7 @@ const sendBill = async (bill, to, agentId) => {
       url: `https://${host}/shop/${bill.shopId}/report/${bill.accDate}`,
       picurl,
     };
-
+    console.log(article);
     // 2.3. 推送微信通知
     return wxeapi.sendNews(to, agentId, [article]);
   } catch (e) {
@@ -117,6 +117,11 @@ const reportDailyShopBill = async () => {
       expire: TEN_DAYS,
     });
 
+    if (!shopBills) {
+      error('未能获取商户日账单数据，无法推送');
+      return;
+    }
+
     // 2. 循环每个商户账单
     const result = shopBills.map(bill => {
       try {
@@ -187,7 +192,7 @@ const reportMonthlyShopBill = async () => {
     return Promise.all(result);
   } catch (e) {
     error('exception occured when reportMonthlyShopBill()');
-    error(e);
+    error(e.message);
     throw e;
   }
 };
