@@ -7,7 +7,7 @@ import { roles, wxeapi, dailyReportCron, monthlyReportCron,
   auth, getTag, dailyReportPicUrl, monthlyReportPicUrl, host,
   error, info, TAG_LIST, rootShopId,
   getShopBillCacheKey, getDeviceBillsCacheKey,
-  getSubShopBillsCacheKey } from '../../config';
+  getSubShopBillsCacheKey, operatorManagerTagId } from '../../config';
 import * as shopModel from './cachedShop';
 import * as wxeapiModel from './cachedWxeapi';
 
@@ -35,7 +35,6 @@ const sendBill = async (bill, to, agentId) => {
       url: `https://${host}/shop/${bill.shopId}/report/${bill.accDate}`,
       picurl,
     };
-    console.log(article);
     // 2.3. 推送微信通知
     return wxeapi.sendNews(to, agentId, [article]);
   } catch (e) {
@@ -197,7 +196,38 @@ const reportMonthlyShopBill = async () => {
   }
 };
 
+const reportDailyOperatorBills = async () => {
+  try {
+    const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
+    // 1. 获取操作员账单列表
+    const operatorBills = await shopModel.fetchOperatorBills(yestoday);
 
+    if (!operatorBills) {
+      error('未能获取操作员日账单数据，无法推送');
+      return;
+    }
+
+    // 2. 计算充值金额总数
+    const bill = operatorBills.reduce((acc, cur) => ({
+      inAmt: acc.inAmt + parseInt(cur.inAmt, 10),
+      outAmt: acc.outAmt + parseInt(cur.outAmt, 10),
+      transCnt: acc.transCnt + parseInt(cur.transCnt, 10),
+    }), { inAmt: 0, outAmt: 0, transCnt: 0 });
+
+    // 生成消息文本
+    const article = {
+      title: `操作员账单(${yestoday})`,
+      description: `收入金额：${bill.inAmt}元，支出金额：${bill.outAmt}，共${bill.transCnt}笔。`,
+      url: `https://${host}/operator-bills/${bill.accDate}`,
+    };
+    // 2.3. 推送微信通知
+    return wxeapi.sendNews({ totag: `${operatorManagerTagId}` }, auth.wxent.agentId, [article]);
+  } catch (e) {
+    error('exception occured when reportDailyShopBill()');
+    error(e);
+    throw e;
+  }
+};
 scheduleJob(dailyReportCron, async () => {
   info('start to daily report. date:', Date.now());
   const result = await reportDailyShopBill();
@@ -217,6 +247,10 @@ scheduleJob(monthlyReportCron, async () => {
     发送失败: result.filter(r => r.errcode !== 0).length,
     未发送: result.filter(r => r === {}).length,
   });
+});
+
+scheduleJob(dailyReportCron, async () => {
+  await reportDailyOperatorBills();
 });
 
 scheduleJob('0 0 6 * * *', async () => {

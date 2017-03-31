@@ -141,4 +141,29 @@ router.get('/:shopId/monthly-bill/:accDate',
   })
 );
 
+router.get('/operator-bills/:accDate',
+  // 确保用户已登录
+  expressJwt({
+    secret: auth.jwt.secret,
+    credentialsRequired: true,
+    getToken: wxeAuth.getToken,
+  }),
+
+  // 规整输入参数
+  (req, res, next) => {
+    let { accDate } = req.params;
+    accDate = `${parseInt(accDate, 10)}`;
+    req.params = { accDate };
+    next();
+  },
+
+  // 获取操作员账单
+  shopMiddlewares.fetchOperatorBills(),
+
+  // 返回结果
+  async (req, res) => res.json({
+    ret: SUCCESS,
+    data: res.data,
+  })
+);
 export default router;

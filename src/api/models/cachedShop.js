@@ -6,6 +6,15 @@ Shop模型的Proxy方法，使用memory-cache 做了缓存处理。
 import * as model from './shop';
 import cacheProxy from './memory-cache-proxy';
 
+const getCacheOptions = (name) => {
+  const TEN_DAYS = 10 * 24 * 3600 * 1000;
+  return {
+    key: `ecard-wxe:shop:${name}`,
+    expire: TEN_DAYS,
+  };
+};
+
+
 /*
 fetchShopBill(shopId, sccDate, {key, expire }): ShopBill
 获取指定日期的商户账单
@@ -35,3 +44,6 @@ export const fetchShopMonthlyBill = (...args) =>
 
 export const fetchSubShopMonthlyBills = (...args) =>
     cacheProxy(model.fetchSubShopMonthlyBills, args[args.length - 1], args.slice(0, -1));
+
+export const fetchOperatorBills = (...args) =>
+    cacheProxy(model.fetchOperatorBills, getCacheOptions(`operatorBills${JSON.stringify(args)}`), args);

@@ -18,6 +18,7 @@ export default {
   children: [
     require('./daily-report').default,
     require('./report').default,
+    require('./operator-bills').default,
 
     // place new routes before...
     require('./notFound').default,

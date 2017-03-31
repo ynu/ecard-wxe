@@ -329,3 +329,44 @@ export const fetchSubShopMonthlyBills = (options = {}) => async (req, res, next)
     fail(e, req, res, next);
   }
 };
+
+export const fetchOperatorBills = (options = {}) => async (req, res, next) => {
+  let { getAccDate, success, fail } = options;
+
+  // 设置参数
+  getAccDate = getAccDate || (req => req.params.accDate);
+  const accDate = getAccDate(req, res);
+
+  success = success || ((bills, req, res, next) => {
+    res.data = bills;
+    next();
+  });
+  fail = fail || ((e, req, res) => res.send({
+    ret: SERVER_FAILED,
+    msg: e.message,
+  }));
+
+  try {
+    const bills = await shopModel.fetchOperatorBills(accDate);
+
+    // 将账单按操作员进行分组
+    const groupByName = bills.reduce((acc, cur) => {
+      if (!acc[cur.operName]) acc[cur.operName] = [];
+      acc[cur.operName].push({
+        operName: cur.operName,
+        accDate: cur.accDate,
+        inAmt: parseInt(cur.inAmt, 10),
+        outAmt: parseInt(cur.outAmt, 10),
+        transCnt: parseInt(cur.transCnt, 10),
+        subjName: cur.subjName,
+        summary: cur.summary,
+      });
+      return acc;
+    }, {});
+    success(groupByName, req, res, next);
+  } catch (e) {
+    error('读取操作员账单失败, accDate:', accDate);
+    error(e.message);
+    fail(e, req, res, next);
+  }
+};

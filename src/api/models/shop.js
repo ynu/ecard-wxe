@@ -153,3 +153,22 @@ export const fetchSubShopMonthlyBills = async (fShopId, accDate) => {
     throw msg;
   }
 };
+
+/*
+获取全部操作员充值记录
+ */
+export const fetchOperatorBills = async (accDate) => {
+  const url = `${ecardApiHost}/operator/all/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
+  try {
+    const operatorBillsResult = await (await fetch(url)).json();
+    // 远处获取数据成功
+    if (operatorBillsResult.ret === 0) {
+      return operatorBillsResult.data;
+    }
+    throw new Error('operatorBillsResult failed');
+  } catch (msg) {
+    error('获取子商户月账单失败:', url);
+    error(msg.message);
+    return [];
+  }
+};

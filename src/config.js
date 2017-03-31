@@ -70,3 +70,6 @@ export const getShopBillCacheKey = (shopId, accDate) => `ecard-wxe:shopBill:${sh
 export const getShopAncestorsCacheKey = shopId => `ecard-wxe:shop:ancestors:${shopId}`;
 export const getSubShopBillsCacheKey = (fShopId, accDate) => `ecard-wxe:subShopBills:${fShopId}:${accDate}`;
 export const getDeviceBillsCacheKey = (shopId, accDate) => `ecard-wxe:deviceDailyBills:${shopId}:${accDate}`;
+
+// 接收操作员账单的tag
+export const operatorManagerTagId = process.env.OPERATOR_MANAGER_TAG_ID || 55;

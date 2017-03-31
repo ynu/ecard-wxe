@@ -22,7 +22,16 @@ const report = (state = defaultReport, action) => {
   }
 };
 
+const operatorBills = (state = [], action) => {
+  switch (action.type) {
+    case FETCH_DONE:
+      return action.data;
+    default:
+      return state;
+  }
+};
 
 export default combineReducers({
   report,
+  operatorBills,
 });
