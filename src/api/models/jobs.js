@@ -218,7 +218,7 @@ const reportDailyOperatorBills = async () => {
     const article = {
       title: `操作员账单(${yestoday})`,
       description: `收入金额：${bill.inAmt}元，支出金额：${bill.outAmt}，共${bill.transCnt}笔。`,
-      url: `https://${host}/operator-bills/${bill.accDate}`,
+      url: `https://${host}/operator-bills/${yestoday}`,
     };
     // 2.3. 推送微信通知
     return wxeapi.sendNews({ totag: `${operatorManagerTagId}` }, auth.wxent.agentId, [article]);
