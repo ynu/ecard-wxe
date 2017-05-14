@@ -92,7 +92,7 @@ const cacheMonthlyData = async month => {
     });
 
     // 2.2. 缓存每个商户的子商户月账单列表
-    const pSubShopBills = shopModel.fetchSubShopMonthBills(bill.shopId, month, {
+    const pSubShopBills = shopModel.fetchSubShopMonthlyBills(bill.shopId, month, {
       key: getSubShopBillsCacheKey(bill.shopId, month),
       expire: TEN_DAYS,
     });
