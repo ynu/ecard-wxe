@@ -231,7 +231,7 @@ const reportDailyOperatorBills = async () => {
 scheduleJob(dailyReportCron, async () => {
   info('start to daily report. date:', Date.now());
   const result = await reportDailyShopBill();
-  info('daily report is done.', {
+  console.log('daily report is done.', {
     发送成功: result.filter(r => r.errcode === 0).length,
     发送失败: result.filter(r => r.errcode !== 0).length,
     未发送: result.filter(r => r === {}).length,
@@ -242,7 +242,7 @@ info('start the report jobs.');
 scheduleJob(monthlyReportCron, async () => {
   info('start to monthly report. date:', Date.now());
   const result = await reportMonthlyShopBill();
-  info('monthly report is done.', {
+  console.log('monthly report is done.', {
     发送成功: result.filter(r => r.errcode === 0).length,
     发送失败: result.filter(r => r.errcode !== 0).length,
     未发送: result.filter(r => r === {}).length,

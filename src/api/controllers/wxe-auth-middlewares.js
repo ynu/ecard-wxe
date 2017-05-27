@@ -35,7 +35,6 @@ export const signin = ({
       // 2.1 缓存 state 和redirect_uri
       const redirectUri = getRedirectUrl(req, res);
       if (!redirectUri) throw new Error({ ret: -1, msg: 'redirect_uri must be provided.' });
-      console.log('###2', redirectUri);
       const state = Math.random().toString();
 
       // 将state 和 redirect_uri 存入cookie中

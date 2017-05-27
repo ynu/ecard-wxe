@@ -48,7 +48,6 @@ router.get('/:shopId/daily-bill/:accDate',
       const ancestors = res.ancestorShops;
       info('ancestors of the shop:', ancestors.map(s => s.shopId));
       // 2. 根据当前商户及所有祖先节点获取tags；
-      console.time('检查权限耗时');
       const tagnames = [
         ...ancestors.map(s => s.shopName),
         res.shopBill.shopName,
@@ -75,7 +74,6 @@ router.get('/:shopId/daily-bill/:accDate',
       // 4. 判断用户是否在用户列表中。
       if (users.some(u => u.userid === userid)) {
         info('用户权限检查通过');
-        console.timeEnd('检查权限耗时');
         next();
       } else {
         info('用户权限检查失败');

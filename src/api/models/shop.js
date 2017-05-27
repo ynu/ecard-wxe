@@ -167,7 +167,7 @@ export const fetchOperatorBills = async (accDate) => {
     }
     throw new Error('operatorBillsResult failed');
   } catch (msg) {
-    error('获取子商户月账单失败:', url);
+    error('获取操作员账单失败:', url);
     error(msg.message);
     return [];
   }
