@@ -73,23 +73,22 @@ export const fetchAncestorShops = async shopId => {
 指定父商户Id和日期，获取子商户日账单列表
  */
 export const fetchSubShopDailyBills = async (fShopId, accDate) => {
+  info('指定父商户Id:', fShopId, ', 和日期:', accDate, ',获取子商户日账单列表:');
   try {
     let url = `${ecardApiHost}/shop/${fShopId}/sub-shop-daily-bills/${accDate}?token=${auth.ecardApiToken}`;
     if (fShopId === 0) {
       url = `${ecardApiHost}/shop/all/daily-bill/${accDate}?token=${auth.ecardApiToken}`;
     }
+    info('从远程获取子商户日账单列表：', url);
     const subShopBillsResult = await (await fetch(url)).json();
     // 远处获取数据成功
     if (subShopBillsResult.ret === 0) {
-      info('fetchSubShopDailyBills is successed');
+      info('远程获取子商户日账单列表成功');
       return subShopBillsResult.data;
     }
-    error('Error Result:', subShopBillsResult);
-    throw new Error('fetchSubShopDailyBills failed');
+    error('远程获取子商户日账单列表失败:', subShopBillsResult);
   } catch (msg) {
-    error(msg.message);
-    error(msg.stack);
-    throw msg;
+    error('远程获取子商户日账单列表错误:', msg.message);
   }
 };
 

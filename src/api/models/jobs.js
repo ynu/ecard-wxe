@@ -45,6 +45,7 @@ const sendBill = async (bill, to, agentId) => {
 };
 
 const cacheDailyData = async day => {
+  info('开始:缓存单日数据:', day);
   // 1. 缓存指定日期的所有日账单
   const shopBills = await shopModel.fetchSubShopDailyBills(rootShopId, day, {
     key: getSubShopBillsCacheKey(rootShopId, day),
@@ -74,6 +75,7 @@ const cacheDailyData = async day => {
     return Promise.all([pBill, pSubShopBills, pDeviceBills]);
   });
   await Promise.all(billPromises);
+  info('结束:缓存单日数据数据');
 };
 
 const cacheMonthlyData = async month => {
@@ -228,6 +230,7 @@ const reportDailyOperatorBills = async () => {
     throw e;
   }
 };
+
 scheduleJob(dailyReportCron, async () => {
   info('start to daily report. date:', Date.now());
   const result = await reportDailyShopBill();
@@ -240,27 +243,35 @@ scheduleJob(dailyReportCron, async () => {
 info('start the report jobs.');
 
 scheduleJob(monthlyReportCron, async () => {
-  info('start to monthly report. date:', Date.now());
+  info('开始：每月推送');
   const result = await reportMonthlyShopBill();
   console.log('monthly report is done.', {
     发送成功: result.filter(r => r.errcode === 0).length,
     发送失败: result.filter(r => r.errcode !== 0).length,
     未发送: result.filter(r => r === {}).length,
   });
+  info('结束：每月推送');
 });
 
 scheduleJob(dailyReportCron, async () => {
+  info('开始：每日推送');
   await reportDailyOperatorBills();
+  info('结束：每日推送');
 });
 
 scheduleJob('0 0 6 * * *', async () => {
   console.time('缓存数据');
+  info('定时缓存开始');
   try {
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     await cacheDailyData(yestoday);
 
+    info('开始:缓存最近月度数据');
     const recentMonth = getRecentMonth();
+    info('最近月份：', recentMonth);
+
     await cacheMonthlyData(recentMonth);
+    info('结束:缓存最近月度数据');
   } catch (e) {
     error('缓存数据出错', e.message);
     error(e.stack);
