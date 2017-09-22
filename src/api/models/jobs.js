@@ -158,6 +158,7 @@ const getRecentMonth = () => {
 };
 
 const reportMonthlyShopBill = async () => {
+  info('开始：每日商户账单推送');
   try {
     // 0. 获取tag列表
     const tags = await wxeapiModel.getTagList({ expire: TEN_DAYS });
@@ -190,6 +191,7 @@ const reportMonthlyShopBill = async () => {
         return null;
       }
     });
+    info('结束：每日商户账单推送');
     return Promise.all(result);
   } catch (e) {
     error('exception occured when reportMonthlyShopBill()');
@@ -199,6 +201,7 @@ const reportMonthlyShopBill = async () => {
 };
 
 const reportDailyOperatorBills = async () => {
+  info('开始：每日操作员账单推送');
   try {
     const yestoday = moment().subtract(1, 'days').format('YYYYMMDD');
     // 1. 获取操作员账单列表
@@ -223,11 +226,11 @@ const reportDailyOperatorBills = async () => {
       url: `https://${host}/operator-bills/${yestoday}`,
     };
     // 2.3. 推送微信通知
-    return wxeapi.sendNews({ totag: `${operatorManagerTagId}` }, auth.wxent.agentId, [article]);
+    const result = wxeapi.sendNews({ totag: `${operatorManagerTagId}` }, auth.wxent.agentId, [article]);
+    info('结束：每日操作员账单推送');
+    return result;
   } catch (e) {
-    error('exception occured when reportDailyShopBill()');
-    error(e);
-    throw e;
+    error('每日操作员账单推送异常：', e.message);
   }
 };
 
@@ -240,6 +243,7 @@ scheduleJob(dailyReportCron, async () => {
     未发送: result.filter(r => r === {}).length,
   });
 });
+
 info('start the report jobs.');
 
 scheduleJob(monthlyReportCron, async () => {
@@ -254,9 +258,7 @@ scheduleJob(monthlyReportCron, async () => {
 });
 
 scheduleJob(dailyReportCron, async () => {
-  info('开始：每日推送');
   await reportDailyOperatorBills();
-  info('结束：每日推送');
 });
 
 scheduleJob('0 0 6 * * *', async () => {
