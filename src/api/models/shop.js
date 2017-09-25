@@ -3,7 +3,7 @@
  */
 
 import fetch from 'node-fetch';
-import { auth, error, info, ecardApiHost, rootShopId } from '../../config';
+import { auth, error, info, warn, ecardApiHost, rootShopId } from '../../config';
 
 /*
 获取指定商户指定日期的日账单
@@ -84,7 +84,10 @@ export const fetchSubShopDailyBills = async (fShopId, accDate) => {
     // 远处获取数据成功
     if (subShopBillsResult.ret === 0) {
       info('远程获取子商户日账单列表成功');
-      return subShopBillsResult.data;
+      if (!subShopBillsResult.data) {
+        warn('子商户日账单列表为空');
+      }
+      return subShopBillsResult.data || [];
     }
     error('远程获取子商户日账单列表失败:', subShopBillsResult);
   } catch (msg) {

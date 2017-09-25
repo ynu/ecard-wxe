@@ -59,6 +59,7 @@ export const certificateFilePath = process.env.CERTIFICATE_FILE_PATH || path.res
 // debug
 export const error = debug('ecard-wxe:error');
 export const info = debug('ecard-wxe:info');
+export const warn = debug('ecard-wxe:warn');
 
 // ecard-api
 export const ecardApiHost = process.env.ECARD_API_HOST || 'https://api.ynu.edu.cn/ecard/v1';
